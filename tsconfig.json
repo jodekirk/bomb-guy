@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5",
+    "target": "ES2021",
     "noImplicitAny": true,
-    "sourceMap": false
+    "sourceMap": false,
+    "strict": true
   }
 }
