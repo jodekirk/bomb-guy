@@ -1,3 +1,4 @@
 *.js
 *.sh
 node_modules
+.idea
