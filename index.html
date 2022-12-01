@@ -1,86 +1,72 @@
-<html>
-
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-  <title>Bomb Guy</title>
-  <script src="index.js"></script>
-  <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-    }
-    #GameCanvas{
-      object-fit: contain;
-      width: auto;
-      max-width: 100vw;
-      min-height: 40ch;
-      max-height: 90vh;
-      height: 70ch;
-    }
-    .box {
-      width: 10px;
-      height: 11px;
-      display: inline-block;
-      border: 1px solid black;
-    }
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <title>Bomb Guy</title>
+    <script src="index.js"></script>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
-    .spoiler {
-      background-color: #333;
-      color: #333;
-      padding: 5px;
-    }
+        #GameCanvas {
+            object-fit: contain;
+            width: auto;
+            max-width: 100vw;
+            min-height: 40ch;
+            max-height: 90vh;
+            height: 70ch;
+        }
 
-    .spoiler:hover {
-      color: white;
-    }
+        .box {
+            width: 10px;
+            height: 11px;
+            display: inline-block;
+            border: 1px solid black;
+        }
 
-    p {
-      max-width: 800px;
-    }
-    @media (prefers-color-scheme:dark) {
-      body{
-        background-color:black;
-        color:white;
-      }
-      .box{
-        border-color: gray;
-      }
-    }
-  </style>
+        p {
+            max-width: 800px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: black;
+                color: white;
+            }
+
+            .box {
+                border-color: gray;
+            }
+        }
+    </style>
 </head>
-
 <body>
-  <canvas width="270" height="270" id="GameCanvas"></canvas>
-
-  <h3>How to play</h3>
-  <p>
+<canvas height="270" id="GameCanvas" width="270"></canvas>
+<h3>How to play</h3>
+<p>
     The user controls the player square using the arrow keys, and place bombs using the space key.
-  </p>
-
-  <ul>
-    <li> <span class="box" style="background-color: #0f0;"></span> The green square is the <b>player</b>.</li>
-    <li> <span class="box" style="background-color: blue;"></span> Blue squares are <b>destructible walls</b>.</li>
-    <li> <span class="box" style="background-color: #c00;"></span> Red squares are <b>bombs</b>.</li>
-    <li> <span class="box" style="background-color: #fc0;"></span> Yellow squares are <b>fire</b>.</li>
-    <li> <span class="box" style="background-color: green;"></span> Dark green squares are <b>extra bomb</b> power-ups.
+</p>
+<ul>
+    <li><span class="box" style="background-color: #0f0;"></span> The green square is the <b>player</b>.</li>
+    <li><span class="box" style="background-color: blue;"></span> Blue squares are <b>destructible walls</b>.</li>
+    <li><span class="box" style="background-color: #c00;"></span> Red squares are <b>bombs</b>.</li>
+    <li><span class="box" style="background-color: #fc0;"></span> Yellow squares are <b>fire</b>.</li>
+    <li><span class="box" style="background-color: green;"></span> Dark green squares are <b>extra bomb</b> power-ups.
     </li>
-    <li> <span class="box" style="background-color: gray;"></span> Gray squares are <b>indestructible walls</b>.</li>
-    <li> <span class="box" style="background-color: #f0f;"></span> The purple square is an enemy <b>monster</b>.</li>
-  </ul>
-
-  <p>
+    <li><span class="box" style="background-color: gray;"></span> Gray squares are <b>indestructible walls</b>.</li>
+    <li><span class="box" style="background-color: #f0f;"></span> The purple square is an enemy <b>monster</b>.</li>
+</ul>
+<p>
     Bombs have a slight delay before they explode, the fire can blow up destructible walls. If the player touches the
     fire or the monster they lose. Initially the player can only place one bomb at a time, but as they collect power ups
     they can place more.
-  </p>
-
-  <h3>How to win</h3>
-  <p>
+</p>
+<h3>How to win</h3>
+<p>
     The objective of the game is to clear the map, like this:
-  </p>
-  <img src="goal.png" width=150 />
-
+</p>
+<img alt="goal: cleared board" src="goal.png" width="270"/>
 </body>
-
 </html>

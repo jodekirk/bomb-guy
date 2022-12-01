@@ -6,7 +6,15 @@
   "rules": {
     "max-lines-per-function": [
       "warn",
-      7
+      {
+        "max": 7
+      }
+    ],
+    "complexity": [
+      1,
+      {
+        "max": 4
+      }
     ]
   },
   "extends": [
