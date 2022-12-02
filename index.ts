@@ -55,6 +55,8 @@ interface Tile {
   isMONSTER_LEFT (): boolean
 
   color (g: CanvasRenderingContext2D): void
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number): void
 }
 
 class AIR implements Tile {
@@ -75,6 +77,16 @@ class AIR implements Tile {
   isMONSTER_LEFT = () => false
 
   color (g: CanvasRenderingContext2D) {}
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 class UNBREAKABLE implements Tile {
@@ -96,6 +108,16 @@ class UNBREAKABLE implements Tile {
 
   color (g: CanvasRenderingContext2D) {
     g.fillStyle = '#999999'
+  }
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 }
 
@@ -119,6 +141,16 @@ class STONE implements Tile {
   color (g: CanvasRenderingContext2D) {
     g.fillStyle = '#0000cc'
   }
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 class BOMB implements Tile {
@@ -140,6 +172,16 @@ class BOMB implements Tile {
 
   color (g: CanvasRenderingContext2D) {
     g.fillStyle = '#770000'
+  }
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 }
 
@@ -163,6 +205,16 @@ class BOMB_CLOSE implements Tile {
   color (g: CanvasRenderingContext2D) {
     g.fillStyle = '#c40000'
   }
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 class BOMB_REALLY_CLOSE implements Tile {
@@ -185,6 +237,16 @@ class BOMB_REALLY_CLOSE implements Tile {
   color (g: CanvasRenderingContext2D) {
     g.fillStyle = '#ff0000'
   }
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 class TMP_FIRE implements Tile {
@@ -205,6 +267,16 @@ class TMP_FIRE implements Tile {
   isMONSTER_LEFT = () => false
 
   color (g: CanvasRenderingContext2D) {}
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 class FIRE implements Tile {
@@ -226,6 +298,16 @@ class FIRE implements Tile {
 
   color (g: CanvasRenderingContext2D) {
     g.fillStyle = '#ffcc00'
+  }
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 }
 
@@ -249,6 +331,16 @@ class EXTRA_BOMB implements Tile {
   color (g: CanvasRenderingContext2D) {
     g.fillStyle = '#0f0'
   }
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 class MONSTER_UP implements Tile {
@@ -269,6 +361,16 @@ class MONSTER_UP implements Tile {
   isMONSTER_LEFT = () => false
 
   color (g: CanvasRenderingContext2D) {}
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 class MONSTER_RIGHT implements Tile {
@@ -289,6 +391,16 @@ class MONSTER_RIGHT implements Tile {
   isMONSTER_LEFT = () => false
 
   color (g: CanvasRenderingContext2D) {}
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 class TMP_MONSTER_RIGHT implements Tile {
@@ -309,6 +421,16 @@ class TMP_MONSTER_RIGHT implements Tile {
   isMONSTER_LEFT = () => false
 
   color (g: CanvasRenderingContext2D) {}
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 class MONSTER_DOWN implements Tile {
@@ -329,6 +451,16 @@ class MONSTER_DOWN implements Tile {
   isMONSTER_LEFT = () => false
 
   color (g: CanvasRenderingContext2D) {}
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 class TMP_MONSTER_DOWN implements Tile {
@@ -349,6 +481,16 @@ class TMP_MONSTER_DOWN implements Tile {
   isMONSTER_LEFT = () => false
 
   color (g: CanvasRenderingContext2D) {}
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 class MONSTER_LEFT implements Tile {
@@ -369,6 +511,16 @@ class MONSTER_LEFT implements Tile {
   isMONSTER_LEFT = () => true
 
   color (g: CanvasRenderingContext2D) {}
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    const tile = map[y][x]
+    tile.color(g)
+    if (isMonster(tile)) drawMonster(g, x, y)
+    if (isBombLike(tile)) {
+      drawBomb(g, x, y)
+    } else if (!tile.isAir() && !isMonster(tile))
+      g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+  }
 }
 
 interface Input {
@@ -717,20 +869,10 @@ function drawPlayer (g: CanvasRenderingContext2D) {
   mouth()
 }
 
-function drawTile (g: CanvasRenderingContext2D, x: number, y: number) {
-  const position = map[y][x]
-  position.color(g)
-  if (isMonster(position)) drawMonster(g, x, y)
-  if (isBombLike(position)) {
-    drawBomb(g, x, y)
-  } else if (!position.isAir() && !isMonster(position))
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-}
-
 function drawMap (g: CanvasRenderingContext2D) {
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
-      drawTile(g, x, y)
+      map[y][x].draw(g, x, y)
     }
   }
 }
