@@ -717,16 +717,20 @@ function drawPlayer (g: CanvasRenderingContext2D) {
   mouth()
 }
 
+function drawTile (g: CanvasRenderingContext2D, x: number, y: number) {
+  const position = map[y][x]
+  position.color(g)
+  if (isMonster(position)) drawMonster(g, x, y)
+  if (isBombLike(position)) {
+    drawBomb(g, x, y)
+  } else if (!position.isAir() && !isMonster(position))
+    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+}
+
 function drawMap (g: CanvasRenderingContext2D) {
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
-      const position = map[y][x]
-      position.color(g)
-      if (isMonster(position)) drawMonster(g, x, y)
-      if (isBombLike(position)) {
-        drawBomb(g, x, y)
-      } else if (!position.isAir() && !isMonster(position))
-        g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+      drawTile(g, x, y)
     }
   }
 }
