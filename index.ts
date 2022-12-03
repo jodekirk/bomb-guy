@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function,@typescript-eslint/no-unused-vars */
+import { drawPlayer } from './drawPlayer.js'
+import { drawMonster } from './drawMonster.js'
+
 const TILE_SIZE = 30
 const FPS = 30
 const SLEEP = 1000 / FPS
@@ -455,7 +458,7 @@ class MONSTER_UP implements Tile {
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     this.color(g)
-    drawMonster(g, x, y)
+    drawMonster(g, x, y, x, y, TILE_SIZE)
   }
 
   move (x: number, y: number) {
@@ -495,7 +498,7 @@ class MONSTER_RIGHT implements Tile {
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     this.color(g)
-    drawMonster(g, x, y)
+    drawMonster(g, x, y, x, y, TILE_SIZE)
   }
 
   move (x: number, y: number) {
@@ -575,7 +578,7 @@ class MONSTER_DOWN implements Tile {
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     this.color(g)
-    drawMonster(g, x, y)
+    drawMonster(g, x, y, x, y, TILE_SIZE)
   }
 
   move (x: number, y: number) {
@@ -655,7 +658,7 @@ class MONSTER_LEFT implements Tile {
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     this.color(g)
-    drawMonster(g, x, y)
+    drawMonster(g, x, y, x, y, TILE_SIZE)
   }
 
   move (x: number, y: number) {
@@ -896,7 +899,7 @@ function draw () {
   const g = drawGraphics()
   if (!g) return
   drawMap(g)
-  drawPlayer(g)
+  if (!gameOver) drawPlayer(g, playerx, playery, TILE_SIZE)
 }
 
 function drawGraphics () {
@@ -906,203 +909,12 @@ function drawGraphics () {
   return g
 }
 
-function drawPlayer (g: CanvasRenderingContext2D) {
-  if (gameOver) return
-
-  function head (fillColor: string | CanvasGradient | CanvasPattern = '#ffad40') {
-    g.beginPath()
-    g.fillStyle = fillColor
-    g.arc(
-      playerx * TILE_SIZE + TILE_SIZE / 2,
-      playery * TILE_SIZE + TILE_SIZE / 6,
-      TILE_SIZE / 6,
-      0,
-      2 * Math.PI
-    )
-    g.fill()
-  }
-
-  head('#ffad40')
-
-  function body (fillColor: string | CanvasGradient | CanvasPattern = '#ffad40') {
-    g.beginPath()
-    g.fillStyle = fillColor
-    g.arc(
-      playerx * TILE_SIZE + TILE_SIZE / 2,
-      playery * TILE_SIZE + TILE_SIZE / 1.8,
-      TILE_SIZE / 3,
-      0,
-      2 * Math.PI
-    )
-    g.fill()
-  }
-
-  body('#ffad40')
-
-  function ears () {
-    //right ear
-    g.arc(
-      playerx * TILE_SIZE + TILE_SIZE / 1.5,
-      playery * TILE_SIZE + TILE_SIZE / 11,
-      TILE_SIZE / 14,
-      2.2,
-      1
-    )
-    //left ear
-    g.arc(
-      playerx * TILE_SIZE + TILE_SIZE / 3.2,
-      playery * TILE_SIZE + TILE_SIZE / 11,
-      TILE_SIZE / 14,
-      2.2,
-      1
-    )
-    g.fill()
-  }
-
-  ears()
-
-  function eyes (fillColor: string | CanvasGradient | CanvasPattern = '#000') {
-    g.beginPath()
-    g.fillStyle = fillColor
-    g.strokeStyle = '#FFF'
-    //left eye
-    g.arc(
-      playerx * TILE_SIZE + TILE_SIZE / 2.3,
-      playery * TILE_SIZE + TILE_SIZE / 8,
-      TILE_SIZE / 24,
-      0,
-      2 * Math.PI
-    )
-    g.stroke()
-    g.fill()
-    //right eye
-    g.beginPath()
-    g.arc(
-      playerx * TILE_SIZE + TILE_SIZE / 1.8,
-      playery * TILE_SIZE + TILE_SIZE / 8,
-      TILE_SIZE / 24,
-      0,
-      2 * Math.PI
-    )
-    g.stroke()
-    g.fill()
-  }
-
-  eyes()
-
-  function mouth (fillColor: string | CanvasGradient | CanvasPattern = '#F00') {
-    g.beginPath()
-    g.fillStyle = fillColor
-    g.arc(
-      playerx * TILE_SIZE + TILE_SIZE / 2,
-      playery * TILE_SIZE + TILE_SIZE / 4,
-      TILE_SIZE / 20,
-      2.2,
-      1
-    )
-    g.fill()
-  }
-
-  mouth()
-}
-
 function drawMap (g: CanvasRenderingContext2D) {
   for (let y = 0; y < map.length; y++) {
     for (let x = 0; x < map[y].length; x++) {
       map[y][x].draw(g, x, y)
     }
   }
-}
-
-function drawMonster (
-  g: CanvasRenderingContext2D,
-  x: number,
-  y: number
-): void {
-  function background () {
-    g.fillStyle = '#000'
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-  }
-
-  background()
-
-  function body () {
-    g.beginPath()
-    g.fillStyle = '#005400'
-    g.arc(
-      x * TILE_SIZE + TILE_SIZE / 2,
-      y * TILE_SIZE + TILE_SIZE / 1.8,
-      TILE_SIZE / 2.5,
-      0,
-      2 * Math.PI
-    )
-    g.fill()
-  }
-
-  body()
-
-  function head () {
-    g.beginPath()
-    g.fillStyle = '#0F0'
-    g.arc(
-      x * TILE_SIZE + TILE_SIZE / 2,
-      y * TILE_SIZE + TILE_SIZE / 6,
-      TILE_SIZE / 6,
-      0,
-      2 * Math.PI
-    )
-    g.fill()
-  }
-
-  head()
-
-  function eye () {
-    g.beginPath()
-    g.fillStyle = '#FFF'
-    g.arc(
-      x * TILE_SIZE + TILE_SIZE / 2,
-      y * TILE_SIZE + TILE_SIZE / 6,
-      TILE_SIZE / 11,
-      0,
-      2 * Math.PI
-    )
-    g.fill()
-  }
-
-  eye()
-
-  function pupil () {
-    g.beginPath()
-    g.fillStyle = '#000'
-    g.arc(
-      x * TILE_SIZE + TILE_SIZE / 2,
-      y * TILE_SIZE + TILE_SIZE / 4.5,
-      TILE_SIZE / 19,
-      0,
-      2 * Math.PI
-    )
-    g.fill()
-  }
-
-  pupil()
-
-  function tooth (fillColor = '#FFF', dx = 1.8, dy = 1.8, radius = 6, startAngle = 0, endAngle = 2) {
-    g.beginPath()
-    g.fillStyle = fillColor
-    g.arc(
-      x * TILE_SIZE + TILE_SIZE / dx,
-      y * TILE_SIZE + TILE_SIZE / dy,
-      TILE_SIZE / radius,
-      startAngle,
-      endAngle
-    )
-    g.fill()
-  }
-
-  tooth('#500000', 1.8, 1.8, 3, 0.2, 3.5)
-  tooth('#F00', 1.8, 1.3, 4, -1, 0.6)
-  tooth('#ffabab', 3.4, 1.2, 4, -1, 0.8)
-  tooth('#F22', 2, 1.4, 4, -4, -2)
 }
 
 function isMonster (position: Tile) {
