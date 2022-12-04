@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-empty-function,@typescript-eslint/no-unused-vars */
-import { drawPlayer } from './drawPlayer.js'
-import { drawMonster } from './drawMonster.js'
+import { drawBricks, drawCrumblyIce, drawMonster, drawPlayer } from './drawTile.js'
 
 const TILE_SIZE = 30
-const FPS = 30
-const SLEEP = 1000 / FPS
+const FPS = 12
+const SLEEP = 900 / FPS
 const TPS = 2
 const DELAY = FPS / TPS
 
@@ -121,7 +120,7 @@ class UNBREAKABLE implements Tile {
   isMONSTER_LEFT = () => false
 
   color (g: CanvasRenderingContext2D) {
-    g.fillStyle = '#999999'
+    g.fillStyle = drawBricks(g, 'red')//'#4d0000'
   }
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
@@ -163,7 +162,7 @@ class STONE implements Tile {
   isMONSTER_LEFT = () => false
 
   color (g: CanvasRenderingContext2D) {
-    g.fillStyle = '#0000cc'
+    g.fillStyle = drawCrumblyIce(g, '#0000cc') //'#0000cc'
   }
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
@@ -458,7 +457,7 @@ class MONSTER_UP implements Tile {
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     this.color(g)
-    drawMonster(g, x, y, x, y, TILE_SIZE)
+    drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.UP)
   }
 
   move (x: number, y: number) {
@@ -498,7 +497,7 @@ class MONSTER_RIGHT implements Tile {
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     this.color(g)
-    drawMonster(g, x, y, x, y, TILE_SIZE)
+    drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.RIGHT)
   }
 
   move (x: number, y: number) {
@@ -578,7 +577,7 @@ class MONSTER_DOWN implements Tile {
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     this.color(g)
-    drawMonster(g, x, y, x, y, TILE_SIZE)
+    drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.DOWN)
   }
 
   move (x: number, y: number) {
@@ -658,7 +657,7 @@ class MONSTER_LEFT implements Tile {
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     this.color(g)
-    drawMonster(g, x, y, x, y, TILE_SIZE)
+    drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.LEFT)
   }
 
   move (x: number, y: number) {
@@ -715,15 +714,28 @@ let playerx = 1
 let playery = 1
 const rawMap: RawTile[][] = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
-  [1, 0, 0, 2, 2, 2, 2, 2, 1],
-  [1, 0, 1, 2, 1, 2, 1, 2, 1],
-  [1, 2, 2, 2, 2, 2, 2, 2, 1],
-  [1, 2, 1, 2, 1, 2, 1, 2, 1],
-  [1, 2, 2, 2, 2, 0, 0, 0, 1],
-  [1, 2, 1, 2, 1, 0, 1, 0, 1],
-  [1, 2, 2, 2, 2, 0, 0, 10, 1],
+  [1, 0, 0, 2, 0, 0, 0, 0, 1],
+  [1, 0, 1, 2, 1, 2, 1, 0, 1],
+  [1, 0, 2, 0, 10, 0, 2, 0, 1],
+  [1, 2, 1, 0, 1, 2, 1, 0, 1],
+  [1, 0, 2, 2, 2, 0, 0, 0, 1],
+  [1, 0, 1, 0, 1, 0, 1, 0, 1],
+  [1, 10, 0, 0, 0, 0, 0, 10, 1],
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
 ]
+
+// [
+// [1, 1, 1, 1, 1, 1, 1, 1, 1],
+//   [1, 0, 0, 2, 2, 2, 2, 2, 1],
+//   [1, 0, 1, 2, 1, 2, 1, 2, 1],
+//   [1, 2, 2, 2, 2, 2, 2, 2, 1],
+//   [1, 2, 1, 2, 1, 2, 1, 2, 1],
+//   [1, 2, 2, 2, 2, 0, 0, 0, 1],
+//   [1, 2, 1, 2, 1, 0, 1, 0, 1],
+//   [1, 2, 2, 2, 2, 0, 0, 10, 1],
+//   [1, 1, 1, 1, 1, 1, 1, 1, 1],
+// ]
+
 /* [
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 0, 0, 0, 10, 0, 1],
@@ -778,6 +790,13 @@ function transformTile (tile: RawTile) {
     default:
       assertExhausted(tile)
   }
+}
+
+enum MoveDirection {
+  UP,
+  RIGHT,
+  DOWN,
+  LEFT
 }
 
 function transformMap () {
@@ -877,7 +896,8 @@ function updateMap () {
 }
 
 function isGameOver () {
-  return map[playery][playerx].isFIRE() || isMonster(map[playery][playerx])
+  if (map[playery][playerx].isFIRE() || isMonster(map[playery][playerx]))
+    gameOver = true
 }
 
 function handleInputs () {
@@ -889,7 +909,7 @@ function handleInputs () {
 
 function update () {
   handleInputs()
-  gameOver = isGameOver()
+  isGameOver()
   if (--delay > 0) return
   delay = DELAY
   updateMap()
