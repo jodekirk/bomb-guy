@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function,@typescript-eslint/no-unused-vars */
-import { drawBricks, drawCrumblyIce, drawMonster, drawPlayer } from './drawTile.js'
+import { drawBombPowerUp, drawBricks, drawCrumblyIce, drawMonster, drawPlayer } from './drawTile.js'
 
 const TILE_SIZE = 30
 const FPS = 12
@@ -56,15 +56,16 @@ interface Tile {
 
   isMONSTER_LEFT (): boolean
 
-  color (g: CanvasRenderingContext2D): void
-
   draw (g: CanvasRenderingContext2D, x: number, y: number): void
 
   move (x: number, y: number): void
+
+  isAiry (): boolean
 }
 
 class AIR implements Tile {
   isAir = () => true
+  isAiry = () => true
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -80,16 +81,12 @@ class AIR implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {}
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -104,6 +101,7 @@ class AIR implements Tile {
 
 class UNBREAKABLE implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => true
   isSTONE = () => false
   isBOMB = () => false
@@ -119,19 +117,14 @@ class UNBREAKABLE implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {
-    g.fillStyle = drawBricks(g, 'red')//'#4d0000'
-  }
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
+    g.fillStyle = drawBricks(g, 'red')//'#4d0000'
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -146,6 +139,7 @@ class UNBREAKABLE implements Tile {
 
 class STONE implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => true
   isBOMB = () => false
@@ -161,19 +155,14 @@ class STONE implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {
-    g.fillStyle = drawCrumblyIce(g, '#0000cc') //'#0000cc'
-  }
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
+    g.fillStyle = drawCrumblyIce(g, '#0000cc') //'#0000cc'
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -188,6 +177,7 @@ class STONE implements Tile {
 
 class BOMB implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => true
@@ -203,19 +193,14 @@ class BOMB implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {
-    g.fillStyle = '#770000'
-  }
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
+    g.fillStyle = '#770000'
     drawBomb(g, x, y)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -230,6 +215,7 @@ class BOMB implements Tile {
 
 class BOMB_CLOSE implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -245,19 +231,14 @@ class BOMB_CLOSE implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {
-    g.fillStyle = '#c40000'
-  }
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
+    g.fillStyle = '#c40000'
     drawBomb(g, x, y)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -272,6 +253,7 @@ class BOMB_CLOSE implements Tile {
 
 class BOMB_REALLY_CLOSE implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -287,19 +269,14 @@ class BOMB_REALLY_CLOSE implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {
-    g.fillStyle = '#ff0000'
-  }
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
+    g.fillStyle = '#ff0000'
     drawBomb(g, x, y)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -314,6 +291,7 @@ class BOMB_REALLY_CLOSE implements Tile {
 
 class TMP_FIRE implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -329,17 +307,13 @@ class TMP_FIRE implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {}
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -354,6 +328,7 @@ class TMP_FIRE implements Tile {
 
 class FIRE implements Tile {
   isAir = () => false
+  isAiry = () => true
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -369,19 +344,14 @@ class FIRE implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {
-    g.fillStyle = '#ffcc00'
-  }
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
+    g.fillStyle = '#ffcc00'
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -396,6 +366,7 @@ class FIRE implements Tile {
 
 class EXTRA_BOMB implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -411,19 +382,13 @@ class EXTRA_BOMB implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {
-    g.fillStyle = '#0f0'
-  }
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
-    g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+    drawBombPowerUp(g, x, y, TILE_SIZE, '#2f4052')
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -438,6 +403,7 @@ class EXTRA_BOMB implements Tile {
 
 class MONSTER_UP implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -453,17 +419,13 @@ class MONSTER_UP implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {}
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
     drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.UP)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -478,6 +440,7 @@ class MONSTER_UP implements Tile {
 
 class MONSTER_RIGHT implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -493,17 +456,13 @@ class MONSTER_RIGHT implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {}
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
     drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.RIGHT)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -518,6 +477,7 @@ class MONSTER_RIGHT implements Tile {
 
 class TMP_MONSTER_RIGHT implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -533,17 +493,13 @@ class TMP_MONSTER_RIGHT implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {}
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -558,6 +514,7 @@ class TMP_MONSTER_RIGHT implements Tile {
 
 class MONSTER_DOWN implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -573,17 +530,13 @@ class MONSTER_DOWN implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {}
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
     drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.DOWN)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -598,6 +551,7 @@ class MONSTER_DOWN implements Tile {
 
 class TMP_MONSTER_DOWN implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -613,17 +567,13 @@ class TMP_MONSTER_DOWN implements Tile {
   isTMP_MONSTER_DOWN = () => true
   isMONSTER_LEFT = () => false
 
-  color (g: CanvasRenderingContext2D) {}
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x
@@ -638,6 +588,7 @@ class TMP_MONSTER_DOWN implements Tile {
 
 class MONSTER_LEFT implements Tile {
   isAir = () => false
+  isAiry = () => false
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
@@ -653,17 +604,13 @@ class MONSTER_LEFT implements Tile {
   isTMP_MONSTER_DOWN = () => false
   isMONSTER_LEFT = () => true
 
-  color (g: CanvasRenderingContext2D) {}
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    this.color(g)
     drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.LEFT)
   }
 
   move (x: number, y: number) {
     if (
-      map[playery + y][playerx + x].isAir() ||
-      map[playery + y][playerx + x].isFIRE()
+      map[playery + y][playerx + x].isAiry()
     ) {
       playery += y
       playerx += x

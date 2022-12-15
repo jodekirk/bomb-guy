@@ -146,14 +146,13 @@ export function drawMonster (
     g.fill()
 
     function pupil () {
-      const eyePosition = [{ x: 0, y: -3 }, { x: 3, y: 0 }, { x: 0, y: 3 }, { x: -3, y: 0 }]
-      const eyeJiggleX = n * 1.1 - 0.5
-      const eyeJiggleY = n * 1.1 - 0.5
+      const pupilPosition = [{ x: 0, y: -3 }, { x: 3, y: 0 }, { x: 0, y: 3 }, { x: -3, y: 0 }]
+      const pupilJiggle = n * 1.4 - 0.5
       g.beginPath()
       g.fillStyle = '#000'
       g.arc(
-        x1 * tilesize + tilesize / 2 + eyePosition[direction].x + eyeJiggleX,
-        y1 * tilesize + tilesize / 5.9 + eyePosition[direction].y + eyeJiggleY,
+        x1 * tilesize + tilesize / 2 + pupilPosition[direction].x + pupilJiggle,
+        y1 * tilesize + tilesize / 5.9 + pupilPosition[direction].y + pupilJiggle,
         tilesize / 21,
         0,
         2 * Math.PI
@@ -186,8 +185,23 @@ export function drawMonster (
   arc('#ffabab', 3.4, 1.2, 3, -1, n * 1.2 + 0.2)
 }
 
+export function drawBombPowerUp (g: CanvasRenderingContext2D,x: number,y: number,TILE_SIZE: number, fillStyle: string) {
+  g.strokeStyle = 'red'
+  g.lineWidth = 5
+  g.fillStyle = fillStyle
+  g.beginPath()
+  g.roundRect(x * TILE_SIZE + TILE_SIZE / 2.6, y * TILE_SIZE + TILE_SIZE / 2.6, 16, 16, 8)
+  g.moveTo(x * TILE_SIZE + TILE_SIZE / 2,y * TILE_SIZE + TILE_SIZE / 2)
+  g.stroke()
+  g.fill()
+  g.lineWidth = 2
+  g.lineTo(x * TILE_SIZE,y * TILE_SIZE + TILE_SIZE / 2.6)
+  g.stroke()
+}
+
 export function drawBricks (g: CanvasRenderingContext2D, fillStyle: string) {
   const c2 = document.createElement('canvas')
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const g2 = c2.getContext('2d')!
   c2.width = 30
   c2.height = 24
@@ -214,12 +228,15 @@ export function drawBricks (g: CanvasRenderingContext2D, fillStyle: string) {
 
   drawRectangles()
   const canvas = document.createElement('canvas')
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ctx = canvas.getContext('2d')!
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return ctx.createPattern(c2, 'repeat')!
 }
 
 export function drawCrumblyIce (g: CanvasRenderingContext2D, fillStyle: string) {
   const c2 = document.createElement('canvas')
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const g2 = c2.getContext('2d')!
   c2.width = 15
   c2.height = 15
@@ -246,6 +263,8 @@ export function drawCrumblyIce (g: CanvasRenderingContext2D, fillStyle: string) 
 
   texture()
   const canvas = document.createElement('canvas')
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const ctx = canvas.getContext('2d')!
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return ctx.createPattern(c2, 'repeat')!
 }
