@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
@@ -28,6 +29,27 @@
 
         p {
             max-width: 800px;
+        }
+
+        INPUT[type=checkbox] {
+            background-color: #DDD;
+            border-radius: 2px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+            position: relative;
+            top: 5px;
+        }
+
+        INPUT[type=checkbox]:checked {
+            background: #409fd6 url("data:image/gif;base64,R0lGODlhCwAKAIABAP////3cnSH5BAEKAAEALAAAAAALAAoAAAIUjH+AC73WHIsw0UCjglraO20PNhYAOw==") 3px 3px no-repeat;
+        }
+
+        .checkboxes {
+            list-style: none;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -68,5 +90,39 @@
     The objective of the game is to clear the map, like this:
 </p>
 <img alt="goal: cleared board" src="goal.png" width="270"/>
+<h3>TODO:</h3>
+<ul class="checkboxes">
+    <li>
+        <label><input checked type="checkbox">Make bombs round</label>
+    </li>
+    <li>
+        <label><input type="checkbox">Bomb range upgrade</label>
+    </li>
+    <li>
+        <label><input type="checkbox">Bombs trigger each other</label>
+    </li>
+    <li>
+        <label><input checked type="checkbox">Draw upgrades with images</label>
+    </li>
+    <li>
+        <label><input type="checkbox">Add lives, incl. extra life upgrade</label>
+    </li>
+    <li>
+        <label><input checked type="checkbox">Add eyes to the monster so you can see which way it is facing</label>
+    </li>
+    <li>
+        <label><input type="checkbox">Add more types of monsters</label>
+    </li>
+    <li>
+        <label><input type="checkbox">Add a slipery tile, when the player steps on it they goes as far as they
+            can in that direction
+        </label>
+    </li>
+    <li>
+        <label><input type="checkbox">Make the fire not take up a whole tile, but still connects to fire next to
+            it
+        </label>
+    </li>
+</ul>
 </body>
 </html>

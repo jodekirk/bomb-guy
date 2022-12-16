@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function,@typescript-eslint/no-unused-vars */
-import { drawBombPowerUp, drawBricks, drawCrumblyIce, drawMonster, drawPlayer } from './drawTile.js'
+import { drawBomb, drawBombPowerUp, drawBricks, drawCrumblyIce, drawMonster, drawPlayer } from './drawTile.js'
 
 const TILE_SIZE = 30
 const FPS = 12
@@ -58,9 +58,11 @@ interface Tile {
 
   draw (g: CanvasRenderingContext2D, x: number, y: number): void
 
-  move (x: number, y: number): void
-
   isAiry (): boolean
+
+  isMonster (): boolean
+
+  update (x?: number, y?: number): Tile
 }
 
 class AIR implements Tile {
@@ -84,18 +86,12 @@ class AIR implements Tile {
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
-    }
+  update (): Tile {
+    return this
+  }
+
+  isMonster (): boolean {
+    return false
   }
 }
 
@@ -122,18 +118,12 @@ class UNBREAKABLE implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
-    }
+  update (): Tile {
+    return this
+  }
+
+  isMonster (): boolean {
+    return false
   }
 }
 
@@ -160,98 +150,116 @@ class STONE implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
-    }
+  update (): Tile {
+    return this
+  }
+
+  isMonster (): boolean {
+    return false
   }
 }
 
 class BOMB implements Tile {
+  constructor (private color: string) {}
+
   isAir = () => false
+
   isAiry = () => false
+
   isUNBREAKABLE = () => false
+
   isSTONE = () => false
+
   isBOMB = () => true
+
   isBOMB_CLOSE = () => false
+
   isBOMB_REALLY_CLOSE = () => false
+
   isTMP_FIRE = () => false
+
   isFIRE = () => false
+
   isEXTRA_BOMB = () => false
+
   isMONSTER_UP = () => false
+
   isMONSTER_RIGHT = () => false
+
   isTMP_MONSTER_RIGHT = () => false
+
   isMONSTER_DOWN = () => false
+
   isTMP_MONSTER_DOWN = () => false
+
   isMONSTER_LEFT = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = '#770000'
-    drawBomb(g, x, y)
+    g.fillStyle = this.color
+    drawBomb(g, x, y, TILE_SIZE, this.color)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
-    }
+  update (): Tile {
+    return new BOMB_CLOSE('#c40000')
+  }
+
+  isMonster (): boolean {
+    return false
   }
 }
 
 class BOMB_CLOSE implements Tile {
+  constructor (private color: string) {}
+
   isAir = () => false
+
   isAiry = () => false
+
   isUNBREAKABLE = () => false
+
   isSTONE = () => false
+
   isBOMB = () => false
+
   isBOMB_CLOSE = () => true
+
   isBOMB_REALLY_CLOSE = () => false
+
   isTMP_FIRE = () => false
+
   isFIRE = () => false
+
   isEXTRA_BOMB = () => false
+
   isMONSTER_UP = () => false
+
   isMONSTER_RIGHT = () => false
+
   isTMP_MONSTER_RIGHT = () => false
+
   isMONSTER_DOWN = () => false
+
   isTMP_MONSTER_DOWN = () => false
+
   isMONSTER_LEFT = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = '#c40000'
-    drawBomb(g, x, y)
+    g.fillStyle = this.color
+    drawBomb(g, x, y, TILE_SIZE, this.color)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
-    }
+  update (): Tile {
+    return new BOMB_REALLY_CLOSE('#ff0000')
+  }
+
+  isMonster (): boolean {
+    return false
   }
 }
 
 class BOMB_REALLY_CLOSE implements Tile {
+  constructor (private color: string) {}
+
   isAir = () => false
   isAiry = () => false
   isUNBREAKABLE = () => false
@@ -270,22 +278,21 @@ class BOMB_REALLY_CLOSE implements Tile {
   isMONSTER_LEFT = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = '#ff0000'
-    drawBomb(g, x, y)
+    g.fillStyle = this.color
+    drawBomb(g, x, y, TILE_SIZE, this.color)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
-    }
+  update (x: number, y: number): Tile {
+    explode(x, y - 1, new FIRE())
+    explode(x, y + 1, new TMP_FIRE())
+    explode(x - 1, y, new FIRE())
+    explode(x + 1, y, new TMP_FIRE())
+    bombs++
+    return new FIRE()
+  }
+
+  isMonster (): boolean {
+    return false
   }
 }
 
@@ -311,18 +318,12 @@ class TMP_FIRE implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
-    }
+  update (): Tile {
+    return new FIRE()
+  }
+
+  isMonster (): boolean {
+    return false
   }
 }
 
@@ -349,18 +350,12 @@ class FIRE implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
-    }
+  update (): Tile {
+    return new AIR()
+  }
+
+  isMonster (): boolean {
+    return false
   }
 }
 
@@ -386,18 +381,12 @@ class EXTRA_BOMB implements Tile {
     drawBombPowerUp(g, x, y, TILE_SIZE, '#2f4052')
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
-    }
+  update (): Tile {
+    return this
+  }
+
+  isMonster (): boolean {
+    return false
   }
 }
 
@@ -423,19 +412,22 @@ class MONSTER_UP implements Tile {
     drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.UP)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
+  update (x: number, y: number): Tile {
+    if (map[y - 1][x].isAir()) {
+      map[y - 1][x] = new MONSTER_UP()
+      return new AIR()
     }
+    return new MONSTER_RIGHT()
   }
+
+  isMonster (): boolean {
+    return true
+  }
+}
+
+function movePlayer (y: number, x: number) {
+  player.y += y
+  player.x += x
 }
 
 class MONSTER_RIGHT implements Tile {
@@ -460,18 +452,16 @@ class MONSTER_RIGHT implements Tile {
     drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.RIGHT)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
+  update (x: number, y: number): Tile {
+    if (map[y][x + 1].isAir()) {
+      map[y][x + 1] = new TMP_MONSTER_RIGHT()
+      return new AIR()
     }
+    return new MONSTER_DOWN()
+  }
+
+  isMonster (): boolean {
+    return true
   }
 }
 
@@ -497,18 +487,12 @@ class TMP_MONSTER_RIGHT implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
-    }
+  update (): Tile {
+    return new MONSTER_RIGHT()
+  }
+
+  isMonster (): boolean {
+    return false
   }
 }
 
@@ -534,18 +518,16 @@ class MONSTER_DOWN implements Tile {
     drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.DOWN)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
+  update (x: number, y: number): Tile {
+    if (map[y + 1][x].isAir()) {
+      map[y + 1][x] = new TMP_MONSTER_DOWN()
+      return new AIR()
     }
+    return new MONSTER_LEFT()
+  }
+
+  isMonster (): boolean {
+    return true
   }
 }
 
@@ -571,18 +553,12 @@ class TMP_MONSTER_DOWN implements Tile {
     g.fillRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
   }
 
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
-    }
+  update (): Tile {
+    return new MONSTER_DOWN()
+  }
+
+  isMonster (): boolean {
+    return false
   }
 }
 
@@ -607,19 +583,17 @@ class MONSTER_LEFT implements Tile {
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     drawMonster(g, x, y, x, y, TILE_SIZE, MoveDirection.LEFT)
   }
-
-  move (x: number, y: number) {
-    if (
-      map[playery + y][playerx + x].isAiry()
-    ) {
-      playery += y
-      playerx += x
-    } else if (map[playery + y][playerx + x].isEXTRA_BOMB()) {
-      playery += y
-      playerx += x
-      bombs++
-      map[playery][playerx] = new AIR()
+  
+  update (x: number, y: number): Tile {
+    if (map[y][x - 1].isAir()) {
+      map[y][x - 1] = new MONSTER_LEFT()
+      return new AIR()
     }
+    return new MONSTER_UP()
+  }
+
+  isMonster (): boolean {
+    return true
   }
 }
 
@@ -657,8 +631,16 @@ class Place implements Input {
   }
 }
 
-let playerx = 1
-let playery = 1
+class Player {
+  public x = 1
+  public y = 1
+
+  draw (g: CanvasRenderingContext2D) {
+    drawPlayer(g, player.x, player.y, TILE_SIZE)
+  }
+}
+
+const player=new Player()
 const rawMap: RawTile[][] = [
   [1, 1, 1, 1, 1, 1, 1, 1, 1],
   [1, 0, 0, 2, 0, 0, 0, 0, 1],
@@ -707,11 +689,11 @@ function transformTile (tile: RawTile) {
     case RawTile.AIR:
       return new AIR()
     case RawTile.BOMB:
-      return new BOMB()
+      return new BOMB('#770000')
     case RawTile.BOMB_CLOSE:
-      return new BOMB_CLOSE()
+      return new BOMB_CLOSE('#c40000')
     case RawTile.BOMB_REALLY_CLOSE:
-      return new BOMB_REALLY_CLOSE()
+      return new BOMB_REALLY_CLOSE('#ff0000')
     case RawTile.EXTRA_BOMB:
       return new EXTRA_BOMB()
     case RawTile.FIRE:
@@ -773,77 +755,34 @@ function explode (x: number, y: number, type: Tile) {
 }
 
 function move (x: number, y: number) {
-  map[playery][playerx].move(x, y)
+  if (
+    map[player.y + y][player.x + x].isAiry()
+  ) {
+    movePlayer(y, x)
+  } else if (map[player.y + y][player.x + x].isEXTRA_BOMB()) {
+    movePlayer(y, x)
+    bombs++
+    map[player.y][player.x] = new AIR()
+  }
 }
 
 function placeBomb () {
   if (bombs > 0) {
-    map[playery][playerx] = new BOMB()
+    map[player.y][player.x] = new BOMB('#770000')
     bombs--
-  }
-}
-
-function updateTile (y: number, x: number) {
-  if (map[y][x].isBOMB()) {
-    map[y][x] = new BOMB_CLOSE()
-  } else if (map[y][x].isBOMB_CLOSE()) {
-    map[y][x] = new BOMB_REALLY_CLOSE()
-  } else if (map[y][x].isBOMB_REALLY_CLOSE()) {
-    explode(x, y - 1, new FIRE())
-    explode(x, y + 1, new TMP_FIRE())
-    explode(x - 1, y, new FIRE())
-    explode(x + 1, y, new TMP_FIRE())
-    map[y][x] = new FIRE()
-    bombs++
-  } else if (map[y][x].isTMP_FIRE()) {
-    map[y][x] = new FIRE()
-  } else if (map[y][x].isFIRE()) {
-    map[y][x] = new AIR()
-  } else if (map[y][x].isTMP_MONSTER_DOWN()) {
-    map[y][x] = new MONSTER_DOWN()
-  } else if (map[y][x].isTMP_MONSTER_RIGHT()) {
-    map[y][x] = new MONSTER_RIGHT()
-  } else if (map[y][x].isMONSTER_RIGHT()) {
-    if (map[y][x + 1].isAir()) {
-      map[y][x] = new AIR()
-      map[y][x + 1] = new TMP_MONSTER_RIGHT()
-    } else {
-      map[y][x] = new MONSTER_DOWN()
-    }
-  } else if (map[y][x].isMONSTER_DOWN()) {
-    if (map[y + 1][x].isAir()) {
-      map[y][x] = new AIR()
-      map[y + 1][x] = new TMP_MONSTER_DOWN()
-    } else {
-      map[y][x] = new MONSTER_LEFT()
-    }
-  } else if (map[y][x].isMONSTER_LEFT()) {
-    if (map[y][x - 1].isAir()) {
-      map[y][x] = new AIR()
-      map[y][x - 1] = new MONSTER_LEFT()
-    } else {
-      map[y][x] = new MONSTER_UP()
-    }
-  } else if (map[y][x].isMONSTER_UP()) {
-    if (map[y - 1][x].isAir()) {
-      map[y][x] = new AIR()
-      map[y - 1][x] = new MONSTER_UP()
-    } else {
-      map[y][x] = new MONSTER_RIGHT()
-    }
   }
 }
 
 function updateMap () {
   for (let y = 1; y < map.length; y++) {
     for (let x = 1; x < map[y].length; x++) {
-      updateTile(y, x)
+      map[y][x] = map[y][x].update(x, y)
     }
   }
 }
 
 function isGameOver () {
-  if (map[playery][playerx].isFIRE() || isMonster(map[playery][playerx]))
+  if (map[player.y][player.x].isFIRE() || map[player.y][player.x].isMonster())
     gameOver = true
 }
 
@@ -866,7 +805,7 @@ function draw () {
   const g = drawGraphics()
   if (!g) return
   drawMap(g)
-  if (!gameOver) drawPlayer(g, playerx, playery, TILE_SIZE)
+  if (!gameOver) player.draw(g)
 }
 
 function drawGraphics () {
@@ -884,39 +823,12 @@ function drawMap (g: CanvasRenderingContext2D) {
   }
 }
 
-function isMonster (position: Tile) {
-  return (
-    position.isMONSTER_UP() || position.isMONSTER_LEFT() || position.isMONSTER_RIGHT() || position.isMONSTER_DOWN()
-  )
-}
-
 function isBombLike (position: Tile) {
   return (
     position.isBOMB() ||
     position.isBOMB_CLOSE() ||
     position.isBOMB_REALLY_CLOSE()
   )
-}
-
-function drawBomb (g: CanvasRenderingContext2D, x: number, y: number) {
-  g.beginPath()
-  g.arc(
-    x * TILE_SIZE + TILE_SIZE / 2,
-    y * TILE_SIZE + TILE_SIZE / 2,
-    TILE_SIZE / 3.9,
-    0,
-    2 * Math.PI
-  )
-  g.fill()
-  g.arc(
-    x * TILE_SIZE + TILE_SIZE / 4,
-    y * TILE_SIZE - TILE_SIZE / 4,
-    TILE_SIZE / 8,
-    0.5,
-    Math.PI * 0.5
-  )
-  g.closePath()
-  g.fill()
 }
 
 function gameLoop () {

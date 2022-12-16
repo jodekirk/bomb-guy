@@ -185,17 +185,38 @@ export function drawMonster (
   arc('#ffabab', 3.4, 1.2, 3, -1, n * 1.2 + 0.2)
 }
 
-export function drawBombPowerUp (g: CanvasRenderingContext2D,x: number,y: number,TILE_SIZE: number, fillStyle: string) {
+export function drawBomb (g: CanvasRenderingContext2D, x: number, y: number, TILE_SIZE: number, fillStyle: string) {
+  g.beginPath()
+  g.arc(
+    x * TILE_SIZE + TILE_SIZE / 2,
+    y * TILE_SIZE + TILE_SIZE / 2,
+    TILE_SIZE / 3.9,
+    0,
+    2 * Math.PI
+  )
+  g.fill()
+  g.arc(
+    x * TILE_SIZE + TILE_SIZE / 4,
+    y * TILE_SIZE - TILE_SIZE / 4,
+    TILE_SIZE / 8,
+    0.5,
+    Math.PI * 0.5
+  )
+  g.closePath()
+  g.fill()
+}
+
+export function drawBombPowerUp (g: CanvasRenderingContext2D, x: number, y: number, TILE_SIZE: number, fillStyle: string) {
   g.strokeStyle = 'red'
   g.lineWidth = 5
   g.fillStyle = fillStyle
   g.beginPath()
   g.roundRect(x * TILE_SIZE + TILE_SIZE / 2.6, y * TILE_SIZE + TILE_SIZE / 2.6, 16, 16, 8)
-  g.moveTo(x * TILE_SIZE + TILE_SIZE / 2,y * TILE_SIZE + TILE_SIZE / 2)
+  g.moveTo(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2)
   g.stroke()
   g.fill()
   g.lineWidth = 2
-  g.lineTo(x * TILE_SIZE,y * TILE_SIZE + TILE_SIZE / 2.6)
+  g.lineTo(x * TILE_SIZE, y * TILE_SIZE + TILE_SIZE / 2.6)
   g.stroke()
 }
 
