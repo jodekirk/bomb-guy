@@ -425,11 +425,6 @@ class MONSTER_UP implements Tile {
   }
 }
 
-function movePlayer (y: number, x: number) {
-  player.y += y
-  player.x += x
-}
-
 class MONSTER_RIGHT implements Tile {
   isAir = () => false
   isAiry = () => false
@@ -632,11 +627,19 @@ class Place implements Input {
 }
 
 class Player {
-  public x = 1
-  public y = 1
-
+  private x = 1
+  private y = 1
+  getX=()=>this.x
+  getY=()=>this.y
+  setX=(x:number)=>this.x=x
+  setY=(y:number)=>this.y=y
   draw (g: CanvasRenderingContext2D) {
-    drawPlayer(g, player.x, player.y, TILE_SIZE)
+    drawPlayer(g, this.x, this.y, TILE_SIZE)
+  }
+
+  move (y: number, x: number) {
+    this.y += y
+    this.x += x
   }
 }
 
@@ -756,19 +759,19 @@ function explode (x: number, y: number, type: Tile) {
 
 function move (x: number, y: number) {
   if (
-    map[player.y + y][player.x + x].isAiry()
+    map[player.getY() + y][player.getX() + x].isAiry()
   ) {
-    movePlayer(y, x)
-  } else if (map[player.y + y][player.x + x].isEXTRA_BOMB()) {
-    movePlayer(y, x)
+    player.move(y, x)
+  } else if (map[player.getY() + y][player.getX() + x].isEXTRA_BOMB()) {
+    player.move(y, x)
     bombs++
-    map[player.y][player.x] = new AIR()
+    map[player.getY()][player.getX()] = new AIR()
   }
 }
 
 function placeBomb () {
   if (bombs > 0) {
-    map[player.y][player.x] = new BOMB('#770000')
+    map[player.getY()][player.getX()] = new BOMB('#770000')
     bombs--
   }
 }
@@ -782,7 +785,7 @@ function updateMap () {
 }
 
 function isGameOver () {
-  if (map[player.y][player.x].isFIRE() || map[player.y][player.x].isMonster())
+  if (map[player.getY()][player.getX()].isFIRE() || map[player.getY()][player.getX()].isMonster())
     gameOver = true
 }
 
