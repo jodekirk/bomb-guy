@@ -18,15 +18,15 @@ class StoneValue implements RawTileValue {
 }
 
 class BombValue implements RawTileValue {
-  transform = () => new BOMB('#770000')
+  transform = () => new BOMB(false, false)
 }
 
 class Bomb_CloseValue implements RawTileValue {
-  transform = () => new BOMB_CLOSE('#c40000')
+  transform = () => new BOMB(true, false, new MEDIUM_DELAY())
 }
 
 class Bomb_Really_CloseValue implements RawTileValue {
-  transform = () => new BOMB_REALLY_CLOSE('#ff0000')
+  transform = () => new BOMB(false, true, new SHORT_DELAY())
 }
 
 class Tmp_FireValue implements RawTileValue {
@@ -252,144 +252,43 @@ class STONE implements Tile {
   }
 }
 
-class BOMB implements Tile {
-  constructor (private color: string) {}
+interface BombDelay {
+  color: string
 
-  explode (map: Tile[][], x: number, y: number, type: Tile) {
+  explode (map: Tile[][], x: number, y: number, type: Tile): void
+
+  update (map: Tile[][], x: number, y: number): Tile
+}
+
+class LONG_DELAY implements BombDelay {
+  public color = '#770000'
+
+  explode (map: Tile[][], x: number, y: number, type: Tile): void {
     game.bombs.increment()
     map[y][x] = type
   }
 
-  isAir = () => false
-
-  isAiry = () => false
-
-  isUNBREAKABLE = () => false
-
-  isSTONE = () => false
-
-  isBOMB = () => true
-
-  isBOMB_CLOSE = () => false
-
-  isBOMB_REALLY_CLOSE = () => false
-
-  isTMP_FIRE = () => false
-
-  isFIRE = () => false
-
-  isEXTRA_BOMB = () => false
-
-  isMONSTER_UP = () => false
-
-  isMONSTER_RIGHT = () => false
-
-  isTMP_MONSTER_RIGHT = () => false
-
-  isMONSTER_DOWN = () => false
-
-  isTMP_MONSTER_DOWN = () => false
-
-  isMONSTER_LEFT = () => false
-
-  draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    drawBomb(g, x, y, game.TILE_SIZE, this.color)
-  }
-
-  update (): Tile {
-    return new BOMB_CLOSE('#c40000')
-  }
-
-  isMonster (): boolean {
-    return false
+  update (map: Tile[][], x: number, y: number): Tile {
+    return new BOMB(true, false, new MEDIUM_DELAY())
   }
 }
 
-class BOMB_CLOSE implements Tile {
-  constructor (private color: string) {}
+class MEDIUM_DELAY implements BombDelay {
+  public color = '#c40000'
 
-  explode (map: Tile[][], x: number, y: number, type: Tile) {
-    // bombs++
-    // map[y][x] = type
+  explode (map: Tile[][], x: number, y: number, type: Tile): void {
   }
 
-  isAir = () => false
-
-  isAiry = () => false
-
-  isUNBREAKABLE = () => false
-
-  isSTONE = () => false
-
-  isBOMB = () => false
-
-  isBOMB_CLOSE = () => true
-
-  isBOMB_REALLY_CLOSE = () => false
-
-  isTMP_FIRE = () => false
-
-  isFIRE = () => false
-
-  isEXTRA_BOMB = () => false
-
-  isMONSTER_UP = () => false
-
-  isMONSTER_RIGHT = () => false
-
-  isTMP_MONSTER_RIGHT = () => false
-
-  isMONSTER_DOWN = () => false
-
-  isTMP_MONSTER_DOWN = () => false
-
-  isMONSTER_LEFT = () => false
-
-  draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    drawBomb(g, x, y, game.TILE_SIZE, this.color)
+  update (map: Tile[][], x: number, y: number): Tile {
+    return new BOMB(false, true, new SHORT_DELAY())
   }
 
-  update (): Tile {
-    return new BOMB_REALLY_CLOSE('#ff0000')
-  }
-
-  isMonster (): boolean {
-    return false
-  }
 }
 
-function explodeSurroundingStones (map: Tile[][], y: number, x: number) {
-  map[y][x].explode(map, x, y - 1, new FIRE())
-  map[y][x].explode(map, x, y + 1, new TMP_FIRE())
-  map[y][x].explode(map, x - 1, y, new FIRE())
-  map[y][x].explode(map, x + 1, y, new TMP_FIRE())
-}
+class SHORT_DELAY implements BombDelay {
+  public color = '#ff0000'
 
-class BOMB_REALLY_CLOSE implements Tile {
-  constructor (private color: string) {}
-
-  isAir = () => false
-  isAiry = () => false
-  isUNBREAKABLE = () => false
-  isSTONE = () => false
-  isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => true
-  isTMP_FIRE = () => false
-  isFIRE = () => false
-  isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => false
-
-  draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    drawBomb(g, x, y, game.TILE_SIZE, this.color)
-  }
-
-  explode (map: Tile[][], x: number, y: number, type: Tile) {
+  explode (map: Tile[][], x: number, y: number, type: Tile): void {
     if (map[y][x].isSTONE()) {
       if (Math.random() < 0.1) map[y][x] = new EXTRA_BOMB()
       else map[y][x] = type
@@ -410,9 +309,65 @@ class BOMB_REALLY_CLOSE implements Tile {
     return new FIRE()
   }
 
+}
+
+class BOMB implements Tile {
+  constructor (private isBombClose: boolean = false, private isBombReallyClose: boolean = false, private delayStrategy: BombDelay = new LONG_DELAY()) {}
+
+  explode (map: Tile[][], x: number, y: number, type: Tile) {
+    this.delayStrategy.explode(map, x, y, type)
+  }
+
+  isAir = () => false
+
+  isAiry = () => false
+
+  isUNBREAKABLE = () => false
+
+  isSTONE = () => false
+
+  isBOMB = () => !this.isBombClose && !this.isBombReallyClose
+
+  isBOMB_CLOSE = () => this.isBombClose
+
+  isBOMB_REALLY_CLOSE = () => this.isBombReallyClose
+
+  isTMP_FIRE = () => false
+
+  isFIRE = () => false
+
+  isEXTRA_BOMB = () => false
+
+  isMONSTER_UP = () => false
+
+  isMONSTER_RIGHT = () => false
+
+  isTMP_MONSTER_RIGHT = () => false
+
+  isMONSTER_DOWN = () => false
+
+  isTMP_MONSTER_DOWN = () => false
+
+  isMONSTER_LEFT = () => false
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+    drawBomb(g, x, y, game.TILE_SIZE, this.delayStrategy.color)
+  }
+
+  update (map: Tile[][], x: number, y: number): Tile {
+    return this.delayStrategy.update(map, x, y)
+  }
+
   isMonster (): boolean {
     return false
   }
+}
+
+function explodeSurroundingStones (map: Tile[][], y: number, x: number) {
+  map[y][x].explode(map, x, y - 1, new FIRE())
+  map[y][x].explode(map, x, y + 1, new TMP_FIRE())
+  map[y][x].explode(map, x - 1, y, new FIRE())
+  map[y][x].explode(map, x + 1, y, new TMP_FIRE())
 }
 
 class TMP_FIRE implements Tile {
@@ -748,36 +703,36 @@ class MONSTER_LEFT implements Tile {
 }
 
 interface Input {
-  handle (game: Game): void
+  handle (): void
 }
 
 class Up implements Input {
-  handle (game: Game): void {
+  handle (): void {
     game.player.tryMove(game.map.map, 0, -1)
   }
 }
 
 class Down implements Input {
-  handle (game: Game): void {
+  handle (): void {
     game.player.tryMove(game.map.map, 0, 1)
   }
 }
 
 class Left implements Input {
-  handle (game: Game): void {
+  handle (): void {
     game.player.tryMove(game.map.map, -1, 0)
   }
 }
 
 class Right implements Input {
-  handle (game: Game): void {
+  handle (): void {
     game.player.tryMove(game.map.map, 1, 0)
   }
 }
 
 class Place implements Input {
-  handle (game: Game): void {
-    game.player.placeBomb()
+  handle (): void {
+    game.placeBomb()
   }
 }
 
@@ -785,8 +740,8 @@ class Game {
   public TILE_SIZE = 30
   readonly player: Player
   readonly map: Map
-  private gameOver = false
   public bombs = new Bombs()
+  private gameOver = false
   private FPS = 12
   private SLEEP = 900 / this.FPS
   private TPS = 2
@@ -811,7 +766,7 @@ class Game {
   }
 
   draw () {
-    const g = drawGraphics()
+    const g = this.drawGraphics()
     if (!g) return
     this.drawMap(g, this.map.map)
     if (!this.gameOver) this.player.draw(g)
@@ -841,8 +796,22 @@ class Game {
   handleInputs () {
     while (!this.gameOver && inputs.length > 0) {
       const input = inputs.pop()
-      input?.handle(game)
+      input?.handle()
     }
+  }
+
+  placeBomb () {
+    if (this.bombs.count() > 0) {
+      this.map.map[this.player.getY()][this.player.getX()] = new BOMB(false, false, new LONG_DELAY())
+      this.bombs.decrement()
+    }
+  }
+
+  private drawGraphics () {
+    const canvas = <HTMLCanvasElement>document.getElementById('GameCanvas')
+    const g = canvas.getContext('2d')
+    g?.clearRect(0, 0, canvas.width, canvas.height)
+    return g
   }
 }
 
@@ -898,13 +867,6 @@ class Player {
     }
   }
 
-  placeBomb () {
-    if (game.bombs.count() > 0) {
-      game.map.map[this.y][this.x] = new BOMB('#770000')
-      game.bombs.decrement()
-    }
-  }
-
   private move (y: number, x: number) {
     this.y += y
     this.x += x
@@ -957,13 +919,6 @@ enum MoveDirection {
 }
 
 let delay = 0
-
-function drawGraphics () {
-  const canvas = <HTMLCanvasElement>document.getElementById('GameCanvas')
-  const g = canvas.getContext('2d')
-  g?.clearRect(0, 0, canvas.width, canvas.height)
-  return g
-}
 
 window.onload = () => {
   game.loop()

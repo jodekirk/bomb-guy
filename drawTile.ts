@@ -1,11 +1,11 @@
-﻿export function drawPlayer (g: CanvasRenderingContext2D, playerx: number, playery: number, tilesize: number) {
+﻿export function drawPlayer (g: CanvasRenderingContext2D, playerx: number, playery: number, TILESIZE: number) {
   function head (fillColor: string | CanvasGradient | CanvasPattern = '#ffad40') {
     g.beginPath()
     g.fillStyle = fillColor
     g.arc(
-      playerx * tilesize + tilesize / 2,
-      playery * tilesize + tilesize / 6,
-      tilesize / 6,
+      playerx * TILESIZE + TILESIZE / 2,
+      playery * TILESIZE + TILESIZE / 6,
+      TILESIZE / 6,
       0,
       2 * Math.PI
     )
@@ -18,9 +18,9 @@
     g.beginPath()
     g.fillStyle = fillColor
     g.arc(
-      playerx * tilesize + tilesize / 2,
-      playery * tilesize + tilesize / 1.8,
-      tilesize / 3,
+      playerx * TILESIZE + TILESIZE / 2,
+      playery * TILESIZE + TILESIZE / 1.8,
+      TILESIZE / 3,
       0,
       2 * Math.PI
     )
@@ -32,17 +32,17 @@
   function ears () {
     //right ear
     g.arc(
-      playerx * tilesize + tilesize / 1.5,
-      playery * tilesize + tilesize / 11,
-      tilesize / 14,
+      playerx * TILESIZE + TILESIZE / 1.5,
+      playery * TILESIZE + TILESIZE / 11,
+      TILESIZE / 14,
       2.2,
       1
     )
     //left ear
     g.arc(
-      playerx * tilesize + tilesize / 3.2,
-      playery * tilesize + tilesize / 11,
-      tilesize / 14,
+      playerx * TILESIZE + TILESIZE / 3.2,
+      playery * TILESIZE + TILESIZE / 11,
+      TILESIZE / 14,
       2.2,
       1
     )
@@ -57,9 +57,9 @@
     g.strokeStyle = '#FFF'
     //left eye
     g.arc(
-      playerx * tilesize + tilesize / 2.3,
-      playery * tilesize + tilesize / 8,
-      tilesize / 24,
+      playerx * TILESIZE + TILESIZE / 2.3,
+      playery * TILESIZE + TILESIZE / 8,
+      TILESIZE / 24,
       0,
       2 * Math.PI
     )
@@ -68,9 +68,9 @@
     //right eye
     g.beginPath()
     g.arc(
-      playerx * tilesize + tilesize / 1.8,
-      playery * tilesize + tilesize / 8,
-      tilesize / 24,
+      playerx * TILESIZE + TILESIZE / 1.8,
+      playery * TILESIZE + TILESIZE / 8,
+      TILESIZE / 24,
       0,
       2 * Math.PI
     )
@@ -84,9 +84,9 @@
     g.beginPath()
     g.fillStyle = fillColor
     g.arc(
-      playerx * tilesize + tilesize / 2,
-      playery * tilesize + tilesize / 4,
-      tilesize / 20,
+      playerx * TILESIZE + TILESIZE / 2,
+      playery * TILESIZE + TILESIZE / 4,
+      TILESIZE / 20,
       2.2,
       1
     )
@@ -99,7 +99,7 @@
 export function drawMonster (
   g: CanvasRenderingContext2D,
   x: number,
-  y: number, x1: number, y1: number, tilesize: number
+  y: number, x1: number, y1: number, TILESIZE: number
   , direction: number): void {
   const n = Math.random()
 
@@ -107,9 +107,9 @@ export function drawMonster (
     g.beginPath()
     g.fillStyle = '#005400'
     g.arc(
-      x1 * tilesize + tilesize / 2,
-      y1 * tilesize + tilesize / 1.8,
-      tilesize / 2.5,
+      x1 * TILESIZE + TILESIZE / 2,
+      y1 * TILESIZE + TILESIZE / 1.8,
+      TILESIZE / 2.5,
       0,
       2 * Math.PI
     )
@@ -122,9 +122,9 @@ export function drawMonster (
     g.beginPath()
     g.fillStyle = '#0F0'
     g.arc(
-      x1 * tilesize + tilesize / 2,
-      y1 * tilesize + tilesize / 6,
-      tilesize / 6,
+      x1 * TILESIZE + TILESIZE / 2,
+      y1 * TILESIZE + TILESIZE / 6,
+      TILESIZE / 6,
       0,
       2 * Math.PI
     )
@@ -137,9 +137,9 @@ export function drawMonster (
     g.beginPath()
     g.fillStyle = '#FFF'
     g.arc(
-      x1 * tilesize + tilesize / 2,
-      y1 * tilesize + tilesize / 6,
-      tilesize / 8,
+      x1 * TILESIZE + TILESIZE / 2,
+      y1 * TILESIZE + TILESIZE / 6,
+      TILESIZE / 8,
       0,
       2 * Math.PI
     )
@@ -151,9 +151,9 @@ export function drawMonster (
       g.beginPath()
       g.fillStyle = '#000'
       g.arc(
-        x1 * tilesize + tilesize / 2 + pupilPosition[direction].x + pupilJiggle,
-        y1 * tilesize + tilesize / 5.9 + pupilPosition[direction].y + pupilJiggle,
-        tilesize / 21,
+        x1 * TILESIZE + TILESIZE / 2 + pupilPosition[direction].x + pupilJiggle,
+        y1 * TILESIZE + TILESIZE / 5.9 + pupilPosition[direction].y + pupilJiggle,
+        TILESIZE / 21,
         0,
         2 * Math.PI
       )
@@ -169,9 +169,9 @@ export function drawMonster (
     g.beginPath()
     g.fillStyle = fillColor
     g.arc(
-      x1 * tilesize + tilesize / dx,
-      y1 * tilesize + tilesize / dy,
-      tilesize / radius,
+      x1 * TILESIZE + TILESIZE / dx,
+      y1 * TILESIZE + TILESIZE / dy,
+      TILESIZE / radius,
       startAngle,
       endAngle
     )
