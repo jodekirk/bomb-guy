@@ -256,7 +256,7 @@ class BOMB implements Tile {
   constructor (private color: string) {}
 
   explode (map: Tile[][], x: number, y: number, type: Tile) {
-    bombs++
+    game.bombs.increment()
     map[y][x] = type
   }
 
@@ -394,7 +394,7 @@ class BOMB_REALLY_CLOSE implements Tile {
       if (Math.random() < 0.1) map[y][x] = new EXTRA_BOMB()
       else map[y][x] = type
     } else if (!map[y][x].isUNBREAKABLE()) {
-      if (this.isBombLike(map[y][x])) bombs++
+      if (this.isBombLike(map[y][x])) game.bombs.increment()
       map[y][x] = type
     }
   }
@@ -406,7 +406,7 @@ class BOMB_REALLY_CLOSE implements Tile {
 
   update (map: Tile[][], x: number, y: number): Tile {
     explodeSurroundingStones(map, y, x)
-    bombs++
+    game.bombs.increment()
     return new FIRE()
   }
 
@@ -785,7 +785,8 @@ class Game {
   public TILE_SIZE = 30
   readonly player: Player
   readonly map: Map
-  public gameOver = false
+  private gameOver = false
+  public bombs = new Bombs()
   private FPS = 12
   private SLEEP = 900 / this.FPS
   private TPS = 2
@@ -803,7 +804,7 @@ class Game {
 
   loop () {
     const before = Date.now()
-    this.update(this.map)
+    this.update()
     this.draw()
     const after = Date.now()
     setTimeout(() => this.loop(), this.sleep(before, after))
@@ -821,12 +822,12 @@ class Game {
     return this.SLEEP - frameTime
   }
 
-  update (map: Map) {
-    handleInputs(game)
-    game.isGameOver()
+  update () {
+    this.handleInputs()
+    this.isGameOver()
     if (--delay > 0) return
     delay = this.DELAY
-    map.update()
+    this.map.update()
   }
 
   drawMap (g: CanvasRenderingContext2D, map: Tile[][]) {
@@ -836,6 +837,20 @@ class Game {
       }
     }
   }
+
+  handleInputs () {
+    while (!this.gameOver && inputs.length > 0) {
+      const input = inputs.pop()
+      input?.handle(game)
+    }
+  }
+}
+
+class Bombs {
+  private bombs = 1
+  count = () => this.bombs
+  increment = () => this.bombs++
+  decrement = () => this.bombs--
 }
 
 class Map {
@@ -878,15 +893,15 @@ class Player {
       this.move(y, x)
     } else if (map[this.y + y][this.x + x].isEXTRA_BOMB()) {
       this.move(y, x)
-      bombs++
+      game.bombs.increment()
       map[this.y][this.x] = new AIR()
     }
   }
 
   placeBomb () {
-    if (bombs > 0) {
+    if (game.bombs.count() > 0) {
       game.map.map[this.y][this.x] = new BOMB('#770000')
-      bombs--
+      game.bombs.decrement()
     }
   }
 
@@ -941,17 +956,7 @@ enum MoveDirection {
   LEFT
 }
 
-const inputs: Input[] = []
-
 let delay = 0
-let bombs = 1
-
-function handleInputs (game: Game) {
-  while (!game.gameOver && inputs.length > 0) {
-    const input = inputs.pop()
-    input?.handle(game)
-  }
-}
 
 function drawGraphics () {
   const canvas = <HTMLCanvasElement>document.getElementById('GameCanvas')
@@ -963,6 +968,8 @@ function drawGraphics () {
 window.onload = () => {
   game.loop()
 }
+
+const inputs: Input[] = []
 
 const LEFT_KEY = 'ArrowLeft'
 const UP_KEY = 'ArrowUp'
