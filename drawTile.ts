@@ -186,6 +186,7 @@ export function drawMonster (
 }
 
 export function drawBomb (g: CanvasRenderingContext2D, x: number, y: number, TILE_SIZE: number, fillStyle: string) {
+  g.fillStyle = fillStyle
   g.beginPath()
   g.arc(
     x * TILE_SIZE + TILE_SIZE / 2,
