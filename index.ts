@@ -30,7 +30,7 @@ class Bomb_Really_CloseValue implements RawTileValue {
 }
 
 class Tmp_FireValue implements RawTileValue {
-  transform = () => new TMP_FIRE()
+  transform = () => new FIRE(new TmpFire())
 }
 
 class FireValue implements RawTileValue {
@@ -118,8 +118,6 @@ interface Tile {
 
   isBOMB_REALLY_CLOSE (): boolean
 
-  isTMP_FIRE (): boolean
-
   isFIRE (): boolean
 
   isEXTRA_BOMB (): boolean
@@ -159,7 +157,6 @@ class AIR implements Tile {
   isBOMB = () => false
   isBOMB_CLOSE = () => false
   isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -191,7 +188,6 @@ class UNBREAKABLE implements Tile {
   isBOMB = () => false
   isBOMB_CLOSE = () => false
   isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -228,7 +224,6 @@ class STONE implements Tile {
   isBOMB = () => false
   isBOMB_CLOSE = () => false
   isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -332,8 +327,6 @@ class BOMB implements Tile {
 
   isBOMB_REALLY_CLOSE = () => this.isBombReallyClose
 
-  isTMP_FIRE = () => false
-
   isFIRE = () => false
 
   isEXTRA_BOMB = () => false
@@ -365,47 +358,36 @@ class BOMB implements Tile {
 
 function explodeSurroundingStones (map: Tile[][], y: number, x: number) {
   map[y][x].explode(map, x, y - 1, new FIRE())
-  map[y][x].explode(map, x, y + 1, new TMP_FIRE())
+  map[y][x].explode(map, x, y + 1, new FIRE(new TmpFire()))
   map[y][x].explode(map, x - 1, y, new FIRE())
-  map[y][x].explode(map, x + 1, y, new TMP_FIRE())
+  map[y][x].explode(map, x + 1, y, new FIRE(new TmpFire()))
 }
 
-class TMP_FIRE implements Tile {
-  explode (map: Tile[][], x: number, y: number, type: Tile) {
-    // map[y][x] = type
-  }
+interface TempFire {
+  isTmpFire: boolean
 
-  isAir = () => false
-  isAiry = () => false
-  isUNBREAKABLE = () => false
-  isSTONE = () => false
-  isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => true
-  isFIRE = () => false
-  isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => false
+  update (): void
+}
 
-  draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillRect(x * game.TILE_SIZE, y * game.TILE_SIZE, game.TILE_SIZE, game.TILE_SIZE)
-  }
+class TmpFire implements TempFire {
+  isTmpFire = true
 
   update (): Tile {
     return new FIRE()
   }
+}
 
-  isMonster (): boolean {
-    return false
+class RegularFire implements TempFire {
+  isTmpFire = false
+
+  update (): Tile {
+    return new AIR()
   }
 }
 
 class FIRE implements Tile {
+  constructor (private TmpFireStrategy = new RegularFire()) {}
+
   explode (map: Tile[][], x: number, y: number, type: Tile) {
     map[y][x] = type
   }
@@ -417,8 +399,7 @@ class FIRE implements Tile {
   isBOMB = () => false
   isBOMB_CLOSE = () => false
   isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => false
-  isFIRE = () => true
+  isFIRE = () => !this.TmpFireStrategy.isTmpFire
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
   isMONSTER_RIGHT = () => false
@@ -433,7 +414,7 @@ class FIRE implements Tile {
   }
 
   update (): Tile {
-    return new AIR()
+    return this.TmpFireStrategy.update()
   }
 
   isMonster (): boolean {
@@ -453,7 +434,6 @@ class EXTRA_BOMB implements Tile {
   isBOMB = () => false
   isBOMB_CLOSE = () => false
   isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => true
   isMONSTER_UP = () => false
@@ -488,7 +468,6 @@ class MONSTER_UP implements Tile {
   isBOMB = () => false
   isBOMB_CLOSE = () => false
   isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => true
@@ -527,7 +506,6 @@ class MONSTER_RIGHT implements Tile {
   isBOMB = () => false
   isBOMB_CLOSE = () => false
   isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -566,7 +544,6 @@ class TMP_MONSTER_RIGHT implements Tile {
   isBOMB = () => false
   isBOMB_CLOSE = () => false
   isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -601,7 +578,6 @@ class MONSTER_DOWN implements Tile {
   isBOMB = () => false
   isBOMB_CLOSE = () => false
   isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -640,7 +616,6 @@ class TMP_MONSTER_DOWN implements Tile {
   isBOMB = () => false
   isBOMB_CLOSE = () => false
   isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -675,7 +650,6 @@ class MONSTER_LEFT implements Tile {
   isBOMB = () => false
   isBOMB_CLOSE = () => false
   isBOMB_REALLY_CLOSE = () => false
-  isTMP_FIRE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
