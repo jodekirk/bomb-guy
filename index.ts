@@ -18,15 +18,15 @@ class StoneValue implements RawTileValue {
 }
 
 class BombValue implements RawTileValue {
-  transform = () => new BOMB(false, false)
+  transform = () => new BOMB()
 }
 
 class Bomb_CloseValue implements RawTileValue {
-  transform = () => new BOMB(true, false, new MEDIUM_DELAY())
+  transform = () => new BOMB(new MEDIUM_DELAY())
 }
 
 class Bomb_Really_CloseValue implements RawTileValue {
-  transform = () => new BOMB(false, true, new SHORT_DELAY())
+  transform = () => new BOMB(new SHORT_DELAY())
 }
 
 class Tmp_FireValue implements RawTileValue {
@@ -254,7 +254,7 @@ class LONG_DELAY implements BombDelay {
   }
 
   update (map: Tile[][], x: number, y: number): Tile {
-    return new BOMB(true, false, new MEDIUM_DELAY())
+    return new BOMB(new MEDIUM_DELAY())
   }
 }
 
@@ -265,9 +265,8 @@ class MEDIUM_DELAY implements BombDelay {
   }
 
   update (map: Tile[][], x: number, y: number): Tile {
-    return new BOMB(false, true, new SHORT_DELAY())
+    return new BOMB(new SHORT_DELAY())
   }
-
 }
 
 class SHORT_DELAY implements BombDelay {
@@ -292,7 +291,7 @@ class SHORT_DELAY implements BombDelay {
 }
 
 class BOMB implements Tile {
-  constructor (private isBombClose: boolean = false, private isBombReallyClose: boolean = false, private delayStrategy: BombDelay = new LONG_DELAY()) {}
+  constructor (private delayStrategy: BombDelay = new LONG_DELAY()) {}
 
   explode (map: Tile[][], x: number, y: number, type: Tile) {
     this.delayStrategy.explode(map, x, y, type)
@@ -741,7 +740,7 @@ class Game {
 
   placeBomb () {
     if (this.bombs.count() > 0) {
-      this.map.map[this.player.getY()][this.player.getX()] = new BOMB(false, false, new LONG_DELAY())
+      this.map.map[this.player.getY()][this.player.getX()] = new BOMB(new LONG_DELAY())
       this.bombs.decrement()
     }
   }
