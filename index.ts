@@ -5,6 +5,13 @@ interface RawTileValue {
   transform (): Tile
 }
 
+enum MoveDirection {
+  UP,
+  RIGHT,
+  DOWN,
+  LEFT
+}
+
 class AirValue implements RawTileValue {
   transform = () => new AIR()
 }
@@ -42,11 +49,11 @@ class Extra_BombValue implements RawTileValue {
 }
 
 class Monster_UpValue implements RawTileValue {
-  transform = () => new MONSTER_UP()
+  transform = () => new MONSTER(new Facing_Up())
 }
 
 class Monster_RightValue implements RawTileValue {
-  transform = () => new MONSTER_RIGHT()
+  transform = () => new MONSTER(new Facing_Right())
 }
 
 class Tmp_Monster_RightValue implements RawTileValue {
@@ -54,7 +61,7 @@ class Tmp_Monster_RightValue implements RawTileValue {
 }
 
 class Monster_DownValue implements RawTileValue {
-  transform = () => new MONSTER_DOWN()
+  transform = () => new MONSTER(new Facing_Down())
 }
 
 class Tmp_Monster_DownValue implements RawTileValue {
@@ -62,7 +69,7 @@ class Tmp_Monster_DownValue implements RawTileValue {
 }
 
 class Monster_LeftValue implements RawTileValue {
-  transform = () => new MONSTER_LEFT()
+  transform = () => new MONSTER(new Facing_Left())
 }
 
 class RawTile {
@@ -118,23 +125,11 @@ interface Tile {
 
   isEXTRA_BOMB (): boolean
 
-  isMONSTER_UP (): boolean
-
-  isMONSTER_RIGHT (): boolean
-
-  isTMP_MONSTER_RIGHT (): boolean
-
-  isMONSTER_DOWN (): boolean
-
-  isTMP_MONSTER_DOWN (): boolean
-
-  isMONSTER_LEFT (): boolean
-
-  draw (g: CanvasRenderingContext2D, x: number, y: number): void
-
   isAiry (): boolean
 
   isMonster (): boolean
+
+  draw (g: CanvasRenderingContext2D, x: number, y: number): void
 
   update (map: Tile[][], x?: number, y?: number): Tile
 
@@ -153,12 +148,6 @@ class AIR implements Tile {
   isBOMB = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
   }
@@ -182,12 +171,6 @@ class UNBREAKABLE implements Tile {
   isBOMB = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = drawBricks(g, 'red')//'#4d0000'
@@ -216,12 +199,6 @@ class STONE implements Tile {
   isBOMB = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = drawCrumblyIce(g, '#0000cc') //'#0000cc'
@@ -311,18 +288,6 @@ class BOMB implements Tile {
 
   isEXTRA_BOMB = () => false
 
-  isMONSTER_UP = () => false
-
-  isMONSTER_RIGHT = () => false
-
-  isTMP_MONSTER_RIGHT = () => false
-
-  isMONSTER_DOWN = () => false
-
-  isTMP_MONSTER_DOWN = () => false
-
-  isMONSTER_LEFT = () => false
-
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     drawBomb(g, x, y, game.TILE_SIZE, this.delayStrategy.color)
   }
@@ -379,12 +344,6 @@ class FIRE implements Tile {
   isBOMB = () => false
   isFIRE = () => !this.TmpFireStrategy.isTmpFire
   isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = '#ffcc00'
@@ -412,12 +371,6 @@ class EXTRA_BOMB implements Tile {
   isBOMB = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => true
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
     drawBombPowerUp(g, x, y, game.TILE_SIZE, '#2f4052')
@@ -432,7 +385,63 @@ class EXTRA_BOMB implements Tile {
   }
 }
 
-class MONSTER_UP implements Tile {
+interface Monster_Direction {
+  DIRECTION: MoveDirection
+
+  update (map: Tile[][], x: number, y: number): Tile
+}
+
+class Facing_Up implements Monster_Direction {
+  public DIRECTION = MoveDirection.UP
+
+  update (map: Tile[][], x: number, y: number): Tile {
+    if (map[y - 1][x].isAir()) {
+      map[y - 1][x] = new MONSTER(new Facing_Up())
+      return new AIR()
+    }
+    return new MONSTER(new Facing_Right())
+  }
+}
+
+class Facing_Right implements Monster_Direction {
+  public DIRECTION = MoveDirection.RIGHT
+
+  update (map: Tile[][], x: number, y: number): Tile {
+    if (map[y][x + 1].isAir()) {
+      map[y][x + 1] = new TMP_MONSTER_RIGHT()
+      return new AIR()
+    }
+    return new MONSTER(new Facing_Down())
+  }
+}
+
+class Facing_Down implements Monster_Direction {
+  public DIRECTION = MoveDirection.DOWN
+
+  update (map: Tile[][], x: number, y: number): Tile {
+    if (map[y + 1][x].isAir()) {
+      map[y + 1][x] = new TMP_MONSTER_DOWN()
+      return new AIR()
+    }
+    return new MONSTER(new Facing_Left())
+  }
+}
+
+class Facing_Left implements Monster_Direction {
+  public DIRECTION = MoveDirection.LEFT
+
+  update (map: Tile[][], x: number, y: number): Tile {
+    if (map[y][x - 1].isAir()) {
+      map[y][x - 1] = new MONSTER(new Facing_Left())
+      return new AIR()
+    }
+    return new MONSTER(new Facing_Up())
+  }
+}
+
+class MONSTER implements Tile {
+  constructor (private direction: Monster_Direction = new Facing_Up()) {}
+
   explode (map: Tile[][], x: number, y: number, type: Tile) {
     // map[y][x] = type
   }
@@ -444,59 +453,13 @@ class MONSTER_UP implements Tile {
   isBOMB = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => true
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    drawMonster(g, x, y, x, y, game.TILE_SIZE, MoveDirection.UP)
+    drawMonster(g, x, y, x, y, game.TILE_SIZE, this.direction.DIRECTION)
   }
 
   update (map: Tile[][], x: number, y: number): Tile {
-    if (map[y - 1][x].isAir()) {
-      map[y - 1][x] = new MONSTER_UP()
-      return new AIR()
-    }
-    return new MONSTER_RIGHT()
-  }
-
-  isMonster (): boolean {
-    return true
-  }
-}
-
-class MONSTER_RIGHT implements Tile {
-  explode (map: Tile[][], x: number, y: number, type: Tile): void {
-    // map[y][x] = type
-  }
-
-  isAir = () => false
-  isAiry = () => false
-  isUNBREAKABLE = () => false
-  isSTONE = () => false
-  isBOMB = () => false
-  isFIRE = () => false
-  isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => true
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => false
-
-  draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    drawMonster(g, x, y, x, y, game.TILE_SIZE, MoveDirection.RIGHT)
-  }
-
-  update (map: Tile[][], x: number, y: number): Tile {
-    if (map[y][x + 1].isAir()) {
-      map[y][x + 1] = new TMP_MONSTER_RIGHT()
-      return new AIR()
-    }
-    return new MONSTER_DOWN()
+    return this.direction.update(map, x, y)
   }
 
   isMonster (): boolean {
@@ -516,59 +479,17 @@ class TMP_MONSTER_RIGHT implements Tile {
   isBOMB = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => true
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillRect(x * game.TILE_SIZE, y * game.TILE_SIZE, game.TILE_SIZE, game.TILE_SIZE)
+    // g.fillRect(x * game.TILE_SIZE, y * game.TILE_SIZE, game.TILE_SIZE, game.TILE_SIZE)
   }
 
   update (): Tile {
-    return new MONSTER_RIGHT()
+    return new MONSTER(new Facing_Right())
   }
 
   isMonster (): boolean {
     return false
-  }
-}
-
-class MONSTER_DOWN implements Tile {
-  explode (map: Tile[][], x: number, y: number, type: Tile): void {
-    // map[y][x] = type
-  }
-
-  isAir = () => false
-  isAiry = () => false
-  isUNBREAKABLE = () => false
-  isSTONE = () => false
-  isBOMB = () => false
-  isFIRE = () => false
-  isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => true
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => false
-
-  draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    drawMonster(g, x, y, x, y, game.TILE_SIZE, MoveDirection.DOWN)
-  }
-
-  update (map: Tile[][], x: number, y: number): Tile {
-    if (map[y + 1][x].isAir()) {
-      map[y + 1][x] = new TMP_MONSTER_DOWN()
-      return new AIR()
-    }
-    return new MONSTER_LEFT()
-  }
-
-  isMonster (): boolean {
-    return true
   }
 }
 
@@ -584,59 +505,17 @@ class TMP_MONSTER_DOWN implements Tile {
   isBOMB = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => true
-  isMONSTER_LEFT = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillRect(x * game.TILE_SIZE, y * game.TILE_SIZE, game.TILE_SIZE, game.TILE_SIZE)
+    // g.fillRect(x * game.TILE_SIZE, y * game.TILE_SIZE, game.TILE_SIZE, game.TILE_SIZE)
   }
 
   update (): Tile {
-    return new MONSTER_DOWN()
+    return new MONSTER(new Facing_Down())
   }
 
   isMonster (): boolean {
     return false
-  }
-}
-
-class MONSTER_LEFT implements Tile {
-  explode (map: Tile[][], x: number, y: number, type: Tile): void {
-    // map[y][x] = type
-  }
-
-  isAir = () => false
-  isAiry = () => false
-  isUNBREAKABLE = () => false
-  isSTONE = () => false
-  isBOMB = () => false
-  isFIRE = () => false
-  isEXTRA_BOMB = () => false
-  isMONSTER_UP = () => false
-  isMONSTER_RIGHT = () => false
-  isTMP_MONSTER_RIGHT = () => false
-  isMONSTER_DOWN = () => false
-  isTMP_MONSTER_DOWN = () => false
-  isMONSTER_LEFT = () => true
-
-  draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    drawMonster(g, x, y, x, y, game.TILE_SIZE, MoveDirection.LEFT)
-  }
-
-  update (map: Tile[][], x: number, y: number): Tile {
-    if (map[y][x - 1].isAir()) {
-      map[y][x - 1] = new MONSTER_LEFT()
-      return new AIR()
-    }
-    return new MONSTER_UP()
-  }
-
-  isMonster (): boolean {
-    return true
   }
 }
 
@@ -848,13 +727,6 @@ const rawMap: number[][] = [
 ] */
 
 const game = new Game(rawMap)
-
-enum MoveDirection {
-  UP,
-  RIGHT,
-  DOWN,
-  LEFT
-}
 
 let delay = 0
 
