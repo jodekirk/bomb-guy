@@ -114,10 +114,6 @@ interface Tile {
 
   isBOMB (): boolean
 
-  isBOMB_CLOSE (): boolean
-
-  isBOMB_REALLY_CLOSE (): boolean
-
   isFIRE (): boolean
 
   isEXTRA_BOMB (): boolean
@@ -155,8 +151,6 @@ class AIR implements Tile {
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -186,8 +180,6 @@ class UNBREAKABLE implements Tile {
   isUNBREAKABLE = () => true
   isSTONE = () => false
   isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -222,8 +214,6 @@ class STONE implements Tile {
   isUNBREAKABLE = () => false
   isSTONE = () => true
   isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -288,15 +278,10 @@ class SHORT_DELAY implements BombDelay {
       if (Math.random() < 0.1) map[y][x] = new EXTRA_BOMB()
       else map[y][x] = type
     } else if (!map[y][x].isUNBREAKABLE()) {
-      if (this.isBombLike(map[y][x])) game.bombs.increment()
+      if (map[y][x].isBOMB()) game.bombs.increment()
       map[y][x] = type
     }
   }
-
-  isBombLike = (position: Tile) =>
-    position.isBOMB() ||
-    position.isBOMB_CLOSE() ||
-    position.isBOMB_REALLY_CLOSE()
 
   update (map: Tile[][], x: number, y: number): Tile {
     explodeSurroundingStones(map, y, x)
@@ -321,11 +306,7 @@ class BOMB implements Tile {
 
   isSTONE = () => false
 
-  isBOMB = () => !this.isBombClose && !this.isBombReallyClose
-
-  isBOMB_CLOSE = () => this.isBombClose
-
-  isBOMB_REALLY_CLOSE = () => this.isBombReallyClose
+  isBOMB = () => true
 
   isFIRE = () => false
 
@@ -397,8 +378,6 @@ class FIRE implements Tile {
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
   isFIRE = () => !this.TmpFireStrategy.isTmpFire
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -432,8 +411,6 @@ class EXTRA_BOMB implements Tile {
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => true
   isMONSTER_UP = () => false
@@ -466,8 +443,6 @@ class MONSTER_UP implements Tile {
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => true
@@ -504,8 +479,6 @@ class MONSTER_RIGHT implements Tile {
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -542,8 +515,6 @@ class TMP_MONSTER_RIGHT implements Tile {
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -576,8 +547,6 @@ class MONSTER_DOWN implements Tile {
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -614,8 +583,6 @@ class TMP_MONSTER_DOWN implements Tile {
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
@@ -648,8 +615,6 @@ class MONSTER_LEFT implements Tile {
   isUNBREAKABLE = () => false
   isSTONE = () => false
   isBOMB = () => false
-  isBOMB_CLOSE = () => false
-  isBOMB_REALLY_CLOSE = () => false
   isFIRE = () => false
   isEXTRA_BOMB = () => false
   isMONSTER_UP = () => false
