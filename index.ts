@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function,@typescript-eslint/no-unused-vars */
-import { drawBomb, drawBombPowerUp, drawBricks, drawCrumblyIce, drawMonster, drawPlayer } from './drawTile.js'
+import { drawBomb, drawBombPowerUp, drawBricks, drawCrumblyIce, drawFire, drawMonster, drawPlayer } from './drawTile.js'
 
 interface RawTileValue {
   transform (): Tile
@@ -10,6 +10,10 @@ enum MoveDirection {
   RIGHT,
   DOWN,
   LEFT
+}
+
+function RandomColor () {
+  return Math.floor(Math.random() * 16777215).toString(16)
 }
 
 class AirValue implements RawTileValue {
@@ -49,11 +53,11 @@ class Extra_BombValue implements RawTileValue {
 }
 
 class Monster_UpValue implements RawTileValue {
-  transform = () => new MONSTER(new Facing_Up())
+  transform = () => new MONSTER(new Facing_Up(), RandomColor())
 }
 
 class Monster_RightValue implements RawTileValue {
-  transform = () => new MONSTER(new Facing_Right())
+  transform = () => new MONSTER(new Facing_Right(), RandomColor())
 }
 
 class Tmp_Monster_RightValue implements RawTileValue {
@@ -61,7 +65,7 @@ class Tmp_Monster_RightValue implements RawTileValue {
 }
 
 class Monster_DownValue implements RawTileValue {
-  transform = () => new MONSTER(new Facing_Down())
+  transform = () => new MONSTER(new Facing_Down(), RandomColor())
 }
 
 class Tmp_Monster_DownValue implements RawTileValue {
@@ -69,7 +73,7 @@ class Tmp_Monster_DownValue implements RawTileValue {
 }
 
 class Monster_LeftValue implements RawTileValue {
-  transform = () => new MONSTER(new Facing_Left())
+  transform = () => new MONSTER(new Facing_Left(), RandomColor())
 }
 
 class RawTile {
@@ -302,10 +306,10 @@ class BOMB implements Tile {
 }
 
 function explodeSurroundingStones (map: Tile[][], y: number, x: number) {
-  map[y][x].explode(map, x, y - 1, new FIRE())
-  map[y][x].explode(map, x, y + 1, new FIRE(new TmpFire()))
-  map[y][x].explode(map, x - 1, y, new FIRE())
-  map[y][x].explode(map, x + 1, y, new FIRE(new TmpFire()))
+  map[y][x].explode(map, x, y - 1, new FIRE(new RegularFire(), '#ffbf6b'))
+  map[y][x].explode(map, x, y + 1, new FIRE(new TmpFire(), '#012b54'))
+  map[y][x].explode(map, x - 1, y, new FIRE(new RegularFire(), '#ff9100'))
+  map[y][x].explode(map, x + 1, y, new FIRE(new TmpFire(), '#0080ff'))
 }
 
 interface TempFire {
@@ -331,7 +335,11 @@ class RegularFire implements TempFire {
 }
 
 class FIRE implements Tile {
-  constructor (private TmpFireStrategy = new RegularFire()) {}
+  private readonly fillStyle: string | CanvasGradient | CanvasPattern
+
+  constructor (private TmpFireStrategy = new RegularFire(), fillStyle?: string | CanvasGradient | CanvasPattern) {
+    this.fillStyle = fillStyle ?? '#ffcc00'
+  }
 
   explode (map: Tile[][], x: number, y: number, type: Tile) {
     map[y][x] = type
@@ -346,8 +354,13 @@ class FIRE implements Tile {
   isEXTRA_BOMB = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    g.fillStyle = '#ffcc00'
-    g.fillRect(x * game.TILE_SIZE, y * game.TILE_SIZE, game.TILE_SIZE, game.TILE_SIZE)
+    g.fillStyle = '#ffff00'
+    // https://orangefreesounds.com/boom-sound-effect/
+    const audioElement = new Audio('sounds/Boom-sound-effect.mp3')
+    audioElement.volume = 0.5
+    void audioElement.play()
+    drawFire(g, x, y, game.TILE_SIZE, this.fillStyle.toString())
+    //g.fillRect(x * game.TILE_SIZE, y * game.TILE_SIZE, game.TILE_SIZE, game.TILE_SIZE)
   }
 
   update (): Tile {
@@ -440,7 +453,11 @@ class Facing_Left implements Monster_Direction {
 }
 
 class MONSTER implements Tile {
-  constructor (private direction: Monster_Direction = new Facing_Up()) {}
+  private readonly fillStyle
+
+  constructor (private direction: Monster_Direction = new Facing_Up(), fillStyle?: string | CanvasGradient | CanvasPattern) {
+    this.fillStyle = fillStyle ?? '#006500'
+  }
 
   explode (map: Tile[][], x: number, y: number, type: Tile) {
     // map[y][x] = type
@@ -455,7 +472,9 @@ class MONSTER implements Tile {
   isEXTRA_BOMB = () => false
 
   draw (g: CanvasRenderingContext2D, x: number, y: number) {
-    drawMonster(g, x, y, x, y, game.TILE_SIZE, this.direction.DIRECTION)
+    drawMonster(g, x, y, x, y, game.TILE_SIZE, this.direction.DIRECTION, this.fillStyle)
+    // drawFire(g, x, y, game.TILE_SIZE, this.fillStyle.toString())
+
   }
 
   update (map: Tile[][], x: number, y: number): Tile {

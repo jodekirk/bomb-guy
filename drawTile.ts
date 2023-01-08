@@ -100,12 +100,12 @@ export function drawMonster (
   g: CanvasRenderingContext2D,
   x: number,
   y: number, x1: number, y1: number, TILESIZE: number
-  , direction: number): void {
+  , direction: number, fillStyle: string | CanvasGradient | CanvasPattern): void {
   const n = Math.random()
 
   function body () {
     g.beginPath()
-    g.fillStyle = '#005400'
+    g.fillStyle = fillStyle
     g.arc(
       x1 * TILESIZE + TILESIZE / 2,
       y1 * TILESIZE + TILESIZE / 1.8,
@@ -254,6 +254,41 @@ export function drawBricks (g: CanvasRenderingContext2D, fillStyle: string) {
   const ctx = canvas.getContext('2d')!
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return ctx.createPattern(c2, 'repeat')!
+}
+
+export function drawFire (g: CanvasRenderingContext2D, x1: number, y1: number, TILESIZE: number, fillStyle: string) {
+  const n = Math.random() * 1.2
+  g.fillStyle = 'orange'
+  g.strokeStyle = '#777' //fillStyle
+  g.beginPath()
+  g.ellipse(x1 * TILESIZE + TILESIZE * 0.45, y1 * TILESIZE + TILESIZE * 0.45, TILESIZE * 0.5, TILESIZE * 0.4, 1, -Math.PI, Math.PI)
+  g.stroke()
+  g.fill()
+  g.fillStyle = 'yellow'
+  g.beginPath()
+  g.roundRect(x1 * TILESIZE + 18, y1 * TILESIZE + 8, 24, 25, [0, 30, 50, 60])
+  g.ellipse(x1 * TILESIZE + TILESIZE * 0.2, y1 * TILESIZE + TILESIZE * 0.2, 0.3, 0.2, 1, 0, 2 * Math.PI)
+  g.stroke()
+  g.fill()
+
+  function arc (fillColor = fillStyle, dx = 1.8, dy = 1.8, radius = 6, startAngle = 0, endAngle = 2) {
+    g.beginPath()
+    g.fillStyle = fillColor
+    g.arc(
+      x1 * TILESIZE + TILESIZE / dx,
+      y1 * TILESIZE + TILESIZE / dy,
+      TILESIZE / radius,
+      startAngle,
+      endAngle
+    )
+    g.fill()
+  }
+
+  arc('#500000', 1.9, 1.8, n * 0.6 + 2.7, 0.2, 3.5)
+  arc('#F00', 1.8, 1.3, 4, 1, -0.6)
+  arc('#ff4040', 2, 1.4, 4, 4, 2)
+  // tongue
+  arc('#ffffff', 3.4, 1.2, 3, -1, n * 1.2 + 0.1)
 }
 
 export function drawCrumblyIce (g: CanvasRenderingContext2D, fillStyle: string) {
