@@ -4,14 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
     "test": "standard"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.45.0",
-    "@typescript-eslint/parser": "^5.45.0",
+    "@typescript-eslint/eslint-plugin": "^5.50.0",
+    "@typescript-eslint/parser": "^5.50.0",
     "standard": "^17.0.0",
-    "typescript": "^4.9.3"
+    "typescript": "^4.9.5"
   }
 }

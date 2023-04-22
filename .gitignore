@@ -5,3 +5,6 @@ node_modules
 .idea
 /package-lock.json
 /index.js.map
+/.vs/slnx.sqlite
+/.vs/bomb-guy/FileContentIndex
+/.vs

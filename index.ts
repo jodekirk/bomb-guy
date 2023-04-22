@@ -253,7 +253,7 @@ class MEDIUM_DELAY implements BombDelay {
 class SHORT_DELAY implements BombDelay {
   public color = '#ff0000'
 
-  explode (map: Tile[][], x: number, y: number, type: Tile): void {
+  explode(map: Tile[][], x: number, y: number, type: Tile): void {
     if (map[y][x].isSTONE()) {
       if (Math.random() < 0.1) map[y][x] = new EXTRA_BOMB()
       else map[y][x] = type
@@ -263,18 +263,19 @@ class SHORT_DELAY implements BombDelay {
     }
   }
 
-  update (map: Tile[][], x: number, y: number): Tile {
+  update(map: Tile[][], x: number, y: number): Tile {
     explodeSurroundingStones(map, y, x)
     game.bombs.increment()
+    // https://orangefreesounds.com/boom-sound-effect/
+    playBoom()
     return new FIRE()
   }
-
 }
 
 class BOMB implements Tile {
-  constructor (private delayStrategy: BombDelay = new LONG_DELAY()) {}
+  constructor(private delayStrategy: BombDelay = new LONG_DELAY()) {}
 
-  explode (map: Tile[][], x: number, y: number, type: Tile) {
+  explode(map: Tile[][], x: number, y: number, type: Tile) {
     this.delayStrategy.explode(map, x, y, type)
   }
 
@@ -292,20 +293,20 @@ class BOMB implements Tile {
 
   isEXTRA_BOMB = () => false
 
-  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
     drawBomb(g, x, y, game.TILE_SIZE, this.delayStrategy.color)
   }
 
-  update (map: Tile[][], x: number, y: number): Tile {
+  update(map: Tile[][], x: number, y: number): Tile {
     return this.delayStrategy.update(map, x, y)
   }
 
-  isMonster (): boolean {
+  isMonster(): boolean {
     return false
   }
 }
 
-function explodeSurroundingStones (map: Tile[][], y: number, x: number) {
+function explodeSurroundingStones(map: Tile[][], y: number, x: number) {
   map[y][x].explode(map, x, y - 1, new FIRE(new RegularFire(), '#ffbf6b'))
   map[y][x].explode(map, x, y + 1, new FIRE(new TmpFire(), '#012b54'))
   map[y][x].explode(map, x - 1, y, new FIRE(new RegularFire(), '#ff9100'))
@@ -315,13 +316,13 @@ function explodeSurroundingStones (map: Tile[][], y: number, x: number) {
 interface TempFire {
   isTmpFire: boolean
 
-  update (): void
+  update(): void
 }
 
 class TmpFire implements TempFire {
   isTmpFire = true
 
-  update (): Tile {
+  update(): Tile {
     return new FIRE()
   }
 }
@@ -329,19 +330,38 @@ class TmpFire implements TempFire {
 class RegularFire implements TempFire {
   isTmpFire = false
 
-  update (): Tile {
+  update(): Tile {
     return new AIR()
   }
+}
+
+const audioElement = InitializeAudio('sounds/Boom-sound-effect.mp3')
+
+function InitializeAudio(sound: string) {
+  const audioElement = new Audio(sound)
+  audioElement.volume = 0.5
+  return audioElement
+}
+
+function playBoom() {
+  // if (!audioElement.paused) {
+  //   // skip playing since already playing
+  // } else {
+  void audioElement.play()
+  // }
 }
 
 class FIRE implements Tile {
   private readonly fillStyle: string | CanvasGradient | CanvasPattern
 
-  constructor (private TmpFireStrategy = new RegularFire(), fillStyle?: string | CanvasGradient | CanvasPattern) {
+  constructor(
+    private TmpFireStrategy = new RegularFire(),
+    fillStyle?: string | CanvasGradient | CanvasPattern
+  ) {
     this.fillStyle = fillStyle ?? '#ffcc00'
   }
 
-  explode (map: Tile[][], x: number, y: number, type: Tile) {
+  explode(map: Tile[][], x: number, y: number, type: Tile) {
     map[y][x] = type
   }
 
@@ -353,21 +373,17 @@ class FIRE implements Tile {
   isFIRE = () => !this.TmpFireStrategy.isTmpFire
   isEXTRA_BOMB = () => false
 
-  draw (g: CanvasRenderingContext2D, x: number, y: number) {
+  draw(g: CanvasRenderingContext2D, x: number, y: number) {
     g.fillStyle = '#ffff00'
-    // https://orangefreesounds.com/boom-sound-effect/
-    const audioElement = new Audio('sounds/Boom-sound-effect.mp3')
-    audioElement.volume = 0.5
-    void audioElement.play()
     drawFire(g, x, y, game.TILE_SIZE, this.fillStyle.toString())
     //g.fillRect(x * game.TILE_SIZE, y * game.TILE_SIZE, game.TILE_SIZE, game.TILE_SIZE)
   }
 
-  update (): Tile {
+  update(): Tile {
     return this.TmpFireStrategy.update()
   }
 
-  isMonster (): boolean {
+  isMonster(): boolean {
     return false
   }
 }

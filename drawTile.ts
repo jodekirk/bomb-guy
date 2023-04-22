@@ -259,19 +259,19 @@ export function drawBricks (g: CanvasRenderingContext2D, fillStyle: string) {
 export function drawFire (g: CanvasRenderingContext2D, x1: number, y1: number, TILESIZE: number, fillStyle: string) {
   const n = Math.random() * 1.2
   g.fillStyle = 'orange'
-  g.strokeStyle = '#777' //fillStyle
+  g.strokeStyle = '#ffcc00' //fillStyle
   g.beginPath()
   g.ellipse(x1 * TILESIZE + TILESIZE * 0.45, y1 * TILESIZE + TILESIZE * 0.45, TILESIZE * 0.5, TILESIZE * 0.4, 1, -Math.PI, Math.PI)
   g.stroke()
   g.fill()
-  g.fillStyle = 'yellow'
+  g.fillStyle = '#ff7700'
   g.beginPath()
-  g.roundRect(x1 * TILESIZE + 18, y1 * TILESIZE + 8, 24, 25, [0, 30, 50, 60])
+  g.roundRect(x1 * TILESIZE, y1 * TILESIZE, 22, 21, [0, 30, 50, 60])
   g.ellipse(x1 * TILESIZE + TILESIZE * 0.2, y1 * TILESIZE + TILESIZE * 0.2, 0.3, 0.2, 1, 0, 2 * Math.PI)
   g.stroke()
   g.fill()
 
-  function arc (fillColor = fillStyle, dx = 1.8, dy = 1.8, radius = 6, startAngle = 0, endAngle = 2) {
+  function arc (fillColor = fillStyle, dx = 1.8, dy = 1.8, radius = 6, startAngle = 0, endAngle = 2,rotation=false) {
     g.beginPath()
     g.fillStyle = fillColor
     g.arc(
@@ -279,16 +279,17 @@ export function drawFire (g: CanvasRenderingContext2D, x1: number, y1: number, T
       y1 * TILESIZE + TILESIZE / dy,
       TILESIZE / radius,
       startAngle,
-      endAngle
+      endAngle,
+      rotation
     )
     g.fill()
   }
 
-  arc('#500000', 1.9, 1.8, n * 0.6 + 2.7, 0.2, 3.5)
-  arc('#F00', 1.8, 1.3, 4, 1, -0.6)
-  arc('#ff4040', 2, 1.4, 4, 4, 2)
+  arc('#FFF', 1.9, 1.9, n * 0.6 + 2.7, 0.2, Math.PI*2)
+  arc('#F00', 1.8, 1.9, 4, 1, -0.6)
+  arc('#ff4040', 2, 1.9, 4, 4, 2)
   // tongue
-  arc('#ffffff', 3.4, 1.2, 3, -1, n * 1.2 + 0.1)
+  arc('#ffffff', 3.4, 1.95, 3, -1, n * 1.2 + 0.1)
 }
 
 export function drawCrumblyIce (g: CanvasRenderingContext2D, fillStyle: string) {
