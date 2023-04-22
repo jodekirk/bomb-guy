@@ -8,3 +8,4 @@ node_modules
 /.vs/slnx.sqlite
 /.vs/bomb-guy/FileContentIndex
 /.vs
+.mailmap
