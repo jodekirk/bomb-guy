@@ -1,8 +1,8 @@
 {
   "compileOnSave": true,
   "compilerOptions": {
-    "module": "ES2020",
-    "target": "ES2021",
+    "module": "ESNext",
+    "target": "ESNext",
     "noImplicitAny": true,
     "sourceMap": true
   }

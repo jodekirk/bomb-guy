@@ -6,6 +6,12 @@ The code already abides by the most common principles "Don't Repeat Yourself", "
 
 This is *not* an easy exercise.
 
+New game style:
+![bomb-guy-new-style.jpg](bomb-guy-new-style.jpg)
+
+Original game style:
+![bomb-guy-original-style.jpg](bomb-guy-original-style.jpg)
+
 # Inspiration for extensions
 
 1. Make bombs round ✅
