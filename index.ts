@@ -602,7 +602,111 @@ class Game {
   constructor (rawMap: number[][]) {
     this.player = new Player()
     this.map = new Map(rawMap)
+    this.addTouchControls();
   }
+
+  addTouchControls() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+    let touchStartTime = 0;
+    let lastTapTime = 0;
+    let lastTapX = 0;
+    let lastTapY = 0;
+    let tapCount = 0;
+    const DOUBLE_TAP_DELAY = 400;
+    const TAP_DISTANCE_THRESHOLD = 30;
+    const SWIPE_THRESHOLD = 30;
+    const MIN_TAP_DURATION = 50;
+    const MAX_TAP_DURATION = 150;
+
+    const handleTap = (e: TouchEvent) => {
+        const currentTime = Date.now();
+        const touchDuration = currentTime - touchStartTime;
+        const touchDistance = Math.sqrt(
+            Math.pow(touchEndX - touchStartX, 2) + 
+            Math.pow(touchEndY - touchStartY, 2)
+        );
+
+        // Ignore if touch duration or distance indicates a swipe
+        if (touchDuration < MIN_TAP_DURATION || 
+            touchDuration > MAX_TAP_DURATION || 
+            touchDistance > TAP_DISTANCE_THRESHOLD) {
+            return false;
+        }
+
+        if (currentTime - lastTapTime > DOUBLE_TAP_DELAY) {
+            tapCount = 0;
+        }
+
+        tapCount++;
+
+        // Check for double tap
+        if (tapCount === 2) {
+            const tapDistance = Math.sqrt(
+                Math.pow(touchEndX - lastTapX, 2) + 
+                Math.pow(touchEndY - lastTapY, 2)
+            );
+
+            if (currentTime - lastTapTime <= DOUBLE_TAP_DELAY && 
+                tapDistance < TAP_DISTANCE_THRESHOLD) {
+                this.placeBomb();
+                tapCount = 0;
+                e.preventDefault();
+                return true;
+            }
+            tapCount = 0;
+        }
+
+        // Store tap data for next comparison
+        lastTapTime = currentTime;
+        lastTapX = touchEndX;
+        lastTapY = touchEndY;
+        return false;
+    };
+
+    const handleSwipe = () => {
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+
+      // Only handle as swipe if movement is greater than threshold
+      if (Math.abs(deltaX) > SWIPE_THRESHOLD || Math.abs(deltaY) > SWIPE_THRESHOLD) {
+          if (Math.abs(deltaX) > Math.abs(deltaY)) {
+              if (deltaX > 0) {
+                  this.player.tryMove(this.map.map, 1, 0);
+              } else {
+                  this.player.tryMove(this.map.map, -1, 0);
+              }
+          } else {
+              if (deltaY > 0) {
+                  this.player.tryMove(this.map.map, 0, 1);
+              } else {
+                  this.player.tryMove(this.map.map, 0, -1);
+              }
+          }
+          return true;
+      }
+      return false;
+  };
+
+    document.addEventListener('touchstart', (e: TouchEvent) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+        touchStartTime = Date.now();
+        e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchend', (e: TouchEvent) => {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        
+        if (!handleTap(e)) {
+            handleSwipe();
+        }
+        e.preventDefault();
+    }, { passive: false });
+}
 
   isGameOver () {
     if (this.map.map[this.player.getY()][this.player.getX()].isFIRE() || this.map.map[this.player.getY()][this.player.getX()].isMonster())
@@ -717,6 +821,11 @@ class Player {
       game.bombs.increment()
       map[this.y][this.x] = new AIR()
     }
+  }
+
+  placeBomb(map: Tile[][]) {
+    game.bombs.increment();
+    map[this.y][this.x] = new BOMB();
   }
 
   private move (y: number, x: number) {
